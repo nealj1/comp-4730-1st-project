@@ -1,0 +1,19 @@
+contourpy==1.1.0           # Contourpy is a specific package for contour plots.
+cycler==0.11.0             # Cycler is a utility for cycling through colors and other styling options in Matplotlib.
+fonttools==4.42.1          # Fonttools is a library for manipulating font files.
+joblib==1.3.2              # Joblib provides tools for lightweight pipelining in Python.
+kiwisolver==1.4.5          # Kiwisolver is a fast solver for generic convex problems.
+matplotlib==3.7.2          # Matplotlib is a comprehensive library for creating static, animated, and interactive plots.
+numpy==1.25.2              # NumPy is a fundamental package for numerical computations in Python.
+packaging==23.1            # Packaging is a library for working with Python package metadata.
+pandas==2.1.0              # Pandas is a popular library for data manipulation and analysis.
+Pillow==10.0.0             # Pillow is a powerful library for image processing and manipulation.
+pyparsing==3.0.9           # Pyparsing is a library for parsing text and binary data.
+python-dateutil==2.8.2     # Python-dateutil provides utilities for parsing and manipulating dates and times.
+pytz==2023.3.post1         # Pytz is a library for handling time zones in Python.
+scikit-learn==1.3.0        # Scikit-learn is a machine learning library that provides tools for classification, regression, clustering, etc.
+scipy==1.11.2              # SciPy is an open-source library for mathematics, science, and engineering.
+seaborn==0.12.2            # Seaborn is a data visualization library based on Matplotlib, with a higher-level interface.
+six==1.16.0                # Six is a Python 2 and 3 compatibility library.
+threadpoolctl==3.2.0       # Threadpoolctl is a library for controlling the number of threads in a multithreaded Python application.
+tzdata==2023.3             # Tzdata provides time zone data for Python applications.
