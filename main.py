@@ -7,7 +7,7 @@ from mpl_toolkits import mplot3d
 from matplotlib.tri import Triangulation
 from scipy.interpolate import griddata
 from mpl_toolkits.mplot3d import Axes3D
-
+import matplotlib as mpl
 
 # GLOBAL VARIABLES
 X_grid_size = 17
@@ -98,4 +98,74 @@ ax.set_zlabel('P')
 ax.set_title('3D Mesh Plot')
 
 # Show the plot
+plt.show()
+
+
+
+# Sample data (replace with your actual data)
+o_values = o_value * len(x_values)  # Replace with your actual values
+
+# Create a figure and 3D subplot
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+
+# Create a colormap for the heights (you can choose any colormap you like)
+#cmap = cm.get_cmap('viridis')
+cmap = mpl.colormaps['viridis']
+
+# Normalize the Z-values to fit the colormap range
+norm = plt.Normalize(min(o_values), max(o_values))
+
+# Create a 3D mesh plot with color mapping
+sc = ax.plot_trisurf(x_values, y_values, o_values, cmap=cmap, norm=norm)
+
+# Add colorbar to show height values
+fig.colorbar(sc, ax=ax, label='Height')
+
+# Label the axes
+# Label the axes
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('O')
+ax.set_title('3D Mesh Plot')
+
+# Show the plot
+plt.show()
+
+plt.plot(x_values, y_values)
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Line Plot of X vs. Y')
+plt.show()
+
+
+
+
+
+# Create a bar plot
+fig, axs = plt.subplots(3, 1, figsize=(8, 12))
+
+# Bar plot for X values
+axs[0].bar(range(len(x_values)), x_values)
+axs[0].set_xlabel('X Values')
+axs[0].set_ylabel('Value')
+axs[0].set_title('Bar Plot of X Values')
+
+# Bar plot for Y values
+axs[1].bar(range(len(y_values)), y_values)
+axs[1].set_xlabel('Y Values')
+axs[1].set_ylabel('Value')
+axs[1].set_title('Bar Plot of Y Values')
+
+# Bar plot for P values
+axs[2].bar(range(len(p_values)), p_values)
+axs[2].set_xlabel('P Values')
+axs[2].set_ylabel('Value')
+axs[2].set_title('Bar Plot of P Values')
+
+# Adjust spacing between subplots
+plt.tight_layout()
+
+# Show the plots
 plt.show()
