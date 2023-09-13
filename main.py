@@ -15,7 +15,7 @@ y_grid_size = 17
 power_output = 17
 
 #PRINTING
-#------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------
 # PRINT TEST
 def print_test():
     # Create a scatter plot
@@ -136,7 +136,7 @@ def crazy_lines():
 
 
 
-#------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------------- End Printing
 
 # DATA
 # Create a DataFrame for the data
@@ -154,6 +154,25 @@ p = df[[f'P{i}' for i in range(1, power_output)]]
 # Select 'Powerall' column
 o = df[['Powerall']]
 
+
+x_axis = df[[f'X{i}' for i in range(1, X_grid_size)]].loc[1]
+y_axis = df[[f'Y{i}' for i in range(1, y_grid_size)]].loc[1]
+#print(df[[f'P{i}' for i in range(1, power_output)]].loc[1])
+
+for x, y in zip(x_axis, y_axis):
+    print(f'{x} {y}')
+# Create a scatter plot with circles as markers
+plt.scatter(x_axis, y_axis, marker='o', label='Points')
+# Set labels and title
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Scatter Plot of X vs. Y')
+# Show the legend if you want to label the marker
+plt.legend()
+# Show the plot
+plt.show()
+
+
 # Process the data
     # Split in to training set and test set
     # Determine representation of input
@@ -164,13 +183,3 @@ o = df[['Powerall']]
 # Evalute on test set: generalization
 
 # Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
-
-
-# Iterate over rows and print X and Y values
-for index in range(len(df)):
-    row = df.iloc[index]
-    x_values = [row[f'X{i}'] for i in range(1, X_grid_size)]
-    y_values = [row[f'Y{i}'] for i in range(1, y_grid_size)]
-    p_values = [row[f'P{i}'] for i in range(1, power_output)]
-    o_value   = [row[f'Powerall']]
-    #print(f"X: {x_values}, Y: {y_values}, P: {p_values}, O: {o_value}")
