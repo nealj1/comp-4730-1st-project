@@ -35,10 +35,10 @@ def print_test():
 
 
 # Create a 3D scatter plot
-def scatter3dplot_test():
+def scatter3dplot_test(x_values, y_values, z_values):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x_values, y_values, p_values, c='r', marker='o', label='P')
+    ax.scatter(x_values, y_values, z_values, c='r', marker='o', label='P')
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('P')
@@ -157,10 +157,12 @@ o = df[['Powerall']]
 
 x_axis = df[[f'X{i}' for i in range(1, X_grid_size)]].loc[1]
 y_axis = df[[f'Y{i}' for i in range(1, y_grid_size)]].loc[1]
-#print(df[[f'P{i}' for i in range(1, power_output)]].loc[1])
+power_out = df[[f'P{i}' for i in range(1, power_output)]].loc[1]
 
-for x, y in zip(x_axis, y_axis):
-    print(f'{x} {y}')
+for x, y,z in zip(x_axis, y_axis, power_out):
+    print(f'{x} {y} {z}\n')
+
+'''
 # Create a scatter plot with circles as markers
 plt.scatter(x_axis, y_axis, marker='o', label='Points')
 # Set labels and title
@@ -171,7 +173,9 @@ plt.title('Scatter Plot of X vs. Y')
 plt.legend()
 # Show the plot
 plt.show()
+'''
 
+#scatter3dplot_test(x_axis, y_axis, power_out)
 
 # Process the data
     # Split in to training set and test set
@@ -183,3 +187,7 @@ plt.show()
 # Evalute on test set: generalization
 
 # Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
+
+flights=sns.load_dataset("flights")
+print(flights.head())
+print(df.head())
