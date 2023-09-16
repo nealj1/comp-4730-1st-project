@@ -16,17 +16,17 @@ power_output = 17
 
 #PRINTING
 #----------------------------------------------------------------------------------------------------------------------------------------------
-# PRINT TEST
-def print_test():
-    # Create a scatter plot
-    plt.scatter(X, y, label='Data Points')
+def print_heatmap_plot():
+    # Create a scatter plot for all data points
+    plt.scatter(X.values.flatten(), y.values.flatten(), c=po.values.flatten(), cmap='viridis', label='Data Points')
 
-    # Add labels and a title
+    # Add labels and a colorbar
     plt.xlabel('X-Axis')
     plt.ylabel('Y-Axis')
-    plt.title('Scatter Plot Example')
+    plt.colorbar(label='Z-Axis (Color)')
 
-    # Add a legend (if needed)
+    # Add a title and legend (if needed)
+    plt.title('ZOOM')
     plt.legend()
 
     # Show the plot
@@ -34,72 +34,25 @@ def print_test():
     return
 
 
-# Create a 3D scatter plot
-def scatter3dplot_test(x_values, y_values, z_values):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x_values, y_values, z_values, c='r', marker='o', label='P')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('P')
-    ax.set_title('3D Scatter Plot')
+# Create a scatter plot of the individual power on a certain configuration, a 16x16 grid with a certain wave pattern setup, and the power generated in there
+def print_scatter_plot():
+    plt.scatter(X.loc[0], y.loc[0], c=po.loc[0], cmap='viridis', label='Data Points')
+
+    # Add labels and a colorbar
+    plt.xlabel('X-Axis')
+    plt.ylabel('Y-Axis')
+    plt.colorbar(label='Z-Axis (Color)')
+
+    # Add a title and legend (if needed)
+    plt.title('HEATER')
     plt.legend()
 
     # Show the plot
     plt.show()
-
-# Create a figure and 3D subplot
-def figand3dsubplot_test():
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Create a 3D mesh plot
-    ax.plot_trisurf(x_values, y_values, p_values, cmap='viridis')
-
-    # Label the axes
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('P')
-    ax.set_title('3D Mesh Plot')
-
-    # Show the plot
-    plt.show()
-
-def print_test():
-    # Sample data (replace with your actual data)
-    o_values = o_value * len(x_values)  # Replace with your actual values
-
-    # Create a figure and 3D subplot
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-
-    # Create a colormap for the heights (you can choose any colormap you like)
-    #cmap = cm.get_cmap('viridis')
-    cmap = mpl.colormaps['viridis']
-
-    # Normalize the Z-values to fit the colormap range
-    norm = plt.Normalize(min(o_values), max(o_values))
-
-    # Create a 3D mesh plot with color mapping
-    sc = ax.plot_trisurf(x_values, y_values, o_values, cmap=cmap, norm=norm)
-
-    # Add colorbar to show height values
-    fig.colorbar(sc, ax=ax, label='Height')
-
-    # Label the axes
-    # Label the axes
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('O')
-    ax.set_title('3D Mesh Plot')
-
-    # Show the plot
-    plt.show()
-
+    return
 
 # Create a bar plot
-def print_bar():
+def print_bar_test():
     fig, axs = plt.subplots(3, 1, figsize=(8, 12))
 
     # Bar plot for X values
@@ -126,16 +79,6 @@ def print_bar():
     # Show the plots
     plt.show()
 
-# Plot lines
-def crazy_lines():
-    plt.plot(x_values, y_values)
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Line Plot of X vs. Y')
-    plt.show()
-
-
-
 #---------------------------------------------------------------------------------------------------------------------------------------------- End Printing
 
 # DATA
@@ -150,32 +93,10 @@ X = df[[f'X{i}' for i in range(1, X_grid_size)]]
 # Select 'Y' columns
 y = df[[f'Y{i}' for i in range(1, y_grid_size)]]
 # Select 'P' columns
-p = df[[f'P{i}' for i in range(1, power_output)]]
+po = df[[f'P{i}' for i in range(1, power_output)]]
 # Select 'Powerall' column
-o = df[['Powerall']]
+pa = df[['Powerall']]
 
-
-x_axis = df[[f'X{i}' for i in range(1, X_grid_size)]].loc[1]
-y_axis = df[[f'Y{i}' for i in range(1, y_grid_size)]].loc[1]
-power_out = df[[f'P{i}' for i in range(1, power_output)]].loc[1]
-
-for x, y,z in zip(x_axis, y_axis, power_out):
-    print(f'{x} {y} {z}\n')
-
-'''
-# Create a scatter plot with circles as markers
-plt.scatter(x_axis, y_axis, marker='o', label='Points')
-# Set labels and title
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title('Scatter Plot of X vs. Y')
-# Show the legend if you want to label the marker
-plt.legend()
-# Show the plot
-plt.show()
-'''
-
-#scatter3dplot_test(x_axis, y_axis, power_out)
 
 # Process the data
     # Split in to training set and test set
@@ -187,7 +108,3 @@ plt.show()
 # Evalute on test set: generalization
 
 # Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
-
-flights=sns.load_dataset("flights")
-print(flights.head())
-print(df.head())
