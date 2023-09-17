@@ -35,8 +35,8 @@ def print_heatmap_plot():
 
 
 # Create a scatter plot of the individual power on a certain configuration, a 16x16 grid with a certain wave pattern setup, and the power generated in there
-def print_scatter_plot():
-    plt.scatter(X.loc[0], y.loc[0], c=po.loc[0], cmap='viridis', label='Data Points')
+def print_scatter_plot(pos):
+    plt.scatter(X.loc[pos], y.loc[pos], c=po.loc[pos], cmap='viridis', label='Data Points')
 
     # Add labels and a colorbar
     plt.xlabel('X-Axis')
@@ -97,6 +97,9 @@ po = df[[f'P{i}' for i in range(1, power_output)]]
 # Select 'Powerall' column
 pa = df[['Powerall']]
 
+# Print Graphs
+#print_heatmap_plot()
+print_scatter_plot(1)
 
 # Process the data
     # Split in to training set and test set
