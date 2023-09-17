@@ -26,7 +26,7 @@ def print_heatmap_plot():
     plt.colorbar(label='Z-Axis (Color)')
 
     # Add a title and legend (if needed)
-    plt.title('ZOOM')
+    plt.title('Heatmap')
     plt.legend()
 
     # Show the plot
@@ -36,15 +36,13 @@ def print_heatmap_plot():
 
 # Create a scatter plot of the individual power on a certain configuration, a 16x16 grid with a certain wave pattern setup, and the power generated in there
 def print_scatter_plot(pos):
-    plt.scatter(X.loc[pos], y.loc[pos], c=po.loc[pos], cmap='viridis', label='Data Points')
+    plt.scatter(X.loc[pos], y.loc[pos], cmap='viridis', label='WEC Locations')
 
     # Add labels and a colorbar
-    plt.xlabel('X-Axis')
-    plt.ylabel('Y-Axis')
-    plt.colorbar(label='Z-Axis (Color)')
-
+    plt.xlabel('X-Axis (Long.)')
+    plt.ylabel('Y-Axis (Lat.)')
     # Add a title and legend (if needed)
-    plt.title('HEATER')
+    plt.title('Distinct Configuration of the Wave Farm')
     plt.legend()
 
     # Show the plot
