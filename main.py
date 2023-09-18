@@ -1,3 +1,5 @@
+# Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
+
 # MODULES
 import pandas as pd
 import numpy as np
@@ -8,6 +10,14 @@ from matplotlib.tri import Triangulation
 from scipy.interpolate import griddata
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib as mpl
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import mean_squared_error
 
 # GLOBAL VARIABLES
 X_grid_size = 17
@@ -91,43 +101,11 @@ def print_scatter_plot(pos):
     # Show the plot
     plt.show()
     return
-
-# Create a bar plot
-def print_bar_test():
-    fig, axs = plt.subplots(3, 1, figsize=(8, 12))
-
-    # Bar plot for X values
-    axs[0].bar(range(len(x_values)), x_values)
-    axs[0].set_xlabel('X Values')
-    axs[0].set_ylabel('Value')
-    axs[0].set_title('Bar Plot of X Values')
-
-    # Bar plot for Y values
-    axs[1].bar(range(len(y_values)), y_values)
-    axs[1].set_xlabel('Y Values')
-    axs[1].set_ylabel('Value')
-    axs[1].set_title('Bar Plot of Y Values')
-
-    # Bar plot for P values
-    axs[2].bar(range(len(p_values)), p_values)
-    axs[2].set_xlabel('P Values')
-    axs[2].set_ylabel('Value')
-    axs[2].set_title('Bar Plot of P Values')
-
-    # Adjust spacing between subplots
-    plt.tight_layout()
-
-    # Show the plots
-    plt.show()
-    return
-
-
-
 #---------------------------------------------------------------------------------------------------------------------------------------------- End Printing
 
-# DATA
+### Data
 # Create a DataFrame for the data
-df = pd.read_csv('WECs_DataSet/Adelaide_Data.csv', header=None)
+df = pd.read_csv('WECs_DataSet/' + filenames[0] + '.csv', header=None)
 
 # X1, X2, ..., X16, Y1, Y2, ..., Y16, P1, P2, ..., P16, Powerall
 df.columns = [f'X{i}' for i in range(1, X_grid_size)] +[f'Y{i}' for i in range(1, y_grid_size)]+ [f'P{i}' for i in range(1, power_output)] + ['Powerall']
@@ -141,28 +119,78 @@ po = df[[f'P{i}' for i in range(1, power_output)]]
 # Select 'Powerall' column
 pa = df[['Powerall']]
 
-# Print Graphs
+### Print Graphs
 #print_total_heatmap_plot()
 #print_scatter_plot(1)
 print_single_heatmap_plot(1)
 # Call the function to create the subplot with scatter plots for the first 9 rows
 #create_subplot_scatter_plots(df[:9], 3, 3)
 
-print(f'{type(X)} : {len(X)} : {X.shape}')
-print(f'{type(y)} : {len(y)} : {y.shape}')
-print(f'{type(po)} : {len(po)} : {po.shape}')
-print(f'{type(pa)} : {len(pa)} : {pa.shape}')
+
+### Process the data
+# Define input features (X) and target variable (y)
+X_set = df.iloc[:, :-1]
+y_set = df['Powerall']
+
+### Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=42)
+
+### Choose form of model:
+# Linear Regression
+linear_reg = LinearRegression()
+linear_reg.fit(X_train, y_train)
+
+# Ridge Regression
+ridge_reg = Ridge(alpha=1.0)
+ridge_reg.fit(X_train, y_train)
+
+# Lasso Regression
+lasso_reg = Lasso(alpha=1.0)
+lasso_reg.fit(X_train, y_train)
+
+# Decision Tree Regression
+tree_reg = DecisionTreeRegressor()
+tree_reg.fit(X_train, y_train)
+
+'''
+# Random Forest Regression
+rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_reg.fit(X_train, y_train)
+
+# Gradient Boosting Regression
+gb_reg = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
+gb_reg.fit(X_train, y_train)
+
+# Support Vector Regression
+svr_reg = SVR(kernel='linear', C=1.0)
+svr_reg.fit(X_train, y_train)
+'''
+
+# K-Nearest Neighbors Regression
+knn_reg = KNeighborsRegressor(n_neighbors=5)
+knn_reg.fit(X_train, y_train)
+
+# MLP (Multi-layer Perceptron) Regression (Neural Network)
+mlp_reg = MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=500, random_state=42)
+mlp_reg.fit(X_train, y_train)
 
 
-# Process the data
-    # Split in to training set and test set
-    # Determine representation of input
-    #Determine the representatin of the output
-# Choose form of model: ex. linear regression
 # Decide how to evalutate the system's performance: objective function
+    # Common regression metrics include Mean Squared Error (MSE), R-squared, etc.
+    # We'll use Mean Squared Error (MSE) as an example here.
+
+
 # Set model parameters to optimize performance
 # Evalute on test set: generalization
+'''
+# Make predictions and evaluate each model
+models = [linear_reg, ridge_reg, lasso_reg, tree_reg, rf_reg, gb_reg, svr_reg, knn_reg, mlp_reg]
+model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "SVR", "K-Nearest Neighbors", "MLP"]
+'''
+models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg, mlp_reg]
+model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors", "MLP"]
 
-# Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
-
-
+for i, model in enumerate(models):
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    print(f"{model_names[i]} - Mean Squared Error: {mse:.2f}")
