@@ -13,10 +13,11 @@ import matplotlib as mpl
 X_grid_size = 17
 y_grid_size = 17
 power_output = 17
+filenames = ["Adelaide_Data","Perth_Data", "Sydney_Data", "Tasmania_Data"]
 
 #PRINTING
 #----------------------------------------------------------------------------------------------------------------------------------------------
-def print_heatmap_plot():
+def print_total_heatmap_plot():
     # Create a scatter plot for all data points
     plt.scatter(X.values.flatten(), y.values.flatten(), c=po.values.flatten(), cmap='viridis', label='Data Points')
 
@@ -33,6 +34,48 @@ def print_heatmap_plot():
     plt.show()
     return
 
+def print_single_heatmap_plot(postion):
+    # Create a scatter plot for all data points
+    plt.scatter(X.loc[postion], y.loc[postion], c=po.loc[postion], cmap='viridis', label='Power Output')
+
+    # Add labels and a colorbar
+    plt.xlabel('X-Axis (Long.)')
+    plt.ylabel('Y-Axis (Lat.)')
+    plt.colorbar(label='Z-Axis (Color)')
+
+    # Add a title and legend (if needed)
+    plt.title('Heatmap of Single Configuration')
+    plt.legend()
+
+    # Show the plot
+    plt.show()
+    return
+
+# Define a function to create the subplot with scatter plots
+def create_subplot_scatter_plots(dataframe, rows, columns):
+    fig, axs = plt.subplots(rows, columns, figsize=(12, 12))
+
+    for pos, ax in enumerate(axs.ravel()):
+        if pos >= len(dataframe):
+            break
+
+        x_data = dataframe.loc[pos, 'X1':'X9']
+        y_data = dataframe.loc[pos, 'Y1':'Y9']
+        po_data = dataframe.loc[pos, 'P1':'P9']
+
+        sc = ax.scatter(x_data, y_data, c=po_data, cmap='viridis', label='Power Output')
+        ax.set_xlabel('X-Axis (Long.)')
+        ax.set_ylabel('Y-Axis (Lat.)')
+        ax.set_title(f'Heatmap Plot for Row {pos} of {filenames[0]}')
+        ax.legend()
+
+        # Add colorbar to each subplot
+        cbar = fig.colorbar(sc, ax=ax)
+        cbar.set_label('Z-Axis (Color)')
+
+    plt.tight_layout()
+    plt.show()
+    return
 
 # Create a scatter plot of the individual power on a certain configuration, a 16x16 grid with a certain wave pattern setup, and the power generated in there
 def print_scatter_plot(pos):
@@ -76,6 +119,9 @@ def print_bar_test():
 
     # Show the plots
     plt.show()
+    return
+
+
 
 #---------------------------------------------------------------------------------------------------------------------------------------------- End Printing
 
@@ -96,8 +142,17 @@ po = df[[f'P{i}' for i in range(1, power_output)]]
 pa = df[['Powerall']]
 
 # Print Graphs
-#print_heatmap_plot()
-print_scatter_plot(1)
+#print_total_heatmap_plot()
+#print_scatter_plot(1)
+print_single_heatmap_plot(1)
+# Call the function to create the subplot with scatter plots for the first 9 rows
+#create_subplot_scatter_plots(df[:9], 3, 3)
+
+print(f'{type(X)} : {len(X)} : {X.shape}')
+print(f'{type(y)} : {len(y)} : {y.shape}')
+print(f'{type(po)} : {len(po)} : {po.shape}')
+print(f'{type(pa)} : {len(pa)} : {pa.shape}')
+
 
 # Process the data
     # Split in to training set and test set
@@ -109,3 +164,5 @@ print_scatter_plot(1)
 # Evalute on test set: generalization
 
 # Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
+
+
