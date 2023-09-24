@@ -75,3 +75,34 @@ def print_scatter_plot(X,y,pos):
     # Show the plot
     plt.show()
     return
+
+def plot_model_performance(model_names, train_metrics, test_metrics, metric_name):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    width = 0.35
+    x = range(len(model_names))
+
+    train_bar = ax.bar([pos - width/2 for pos in x], train_metrics, width, label='Training')
+    test_bar = ax.bar([pos + width/2 for pos in x], test_metrics, width, label='Testing')
+
+    ax.set_xlabel('Models')
+    ax.set_ylabel(metric_name)
+    ax.set_title(f'{metric_name} by Model')
+    ax.set_xticks(x)
+    ax.set_xticklabels(model_names, rotation=45)
+    ax.legend()
+
+    plt.tight_layout()
+    plt.show()
+
+def print_metrics(model_metrics):
+    for metrics in model_metrics:
+        print(metrics['Model Name'])
+        print("Training MSE:", metrics['Training MSE'])
+        print("Testing MSE:", metrics['Testing MSE'])
+        print("Training RMSE:", metrics['Training RMSE'])
+        print("Testing RMSE:", metrics['Testing RMSE'])
+        print("Training MAE:", metrics['Training MAE'])
+        print("Testing MAE:", metrics['Testing MAE'])
+        print("Training R2:", metrics['Training R2'])   
+        print("Testing R2:", metrics['Testing R2'])
+        print()
