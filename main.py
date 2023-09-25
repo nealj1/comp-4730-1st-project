@@ -40,13 +40,12 @@ models_and_params = {
     'Linear Regression': (LinearRegression(), {}),
     'Ridge Regression': (Ridge(), param_grid),
     'Lasso Regression': (Lasso(), param_grid),
-    'Decision Tree': (DecisionTreeRegressor(), {'max_depth': [1, 5, 10, 15,20, None]}),
-    'K-Nearest Neighbors': (KNeighborsRegressor(), {'n_neighbors': [1, 3, 5, 7, 10, 15]}),
+    #'Decision Tree': (DecisionTreeRegressor(), {'max_depth': [1, 5, 10, 15,20, None]}),
+    #'K-Nearest Neighbors': (KNeighborsRegressor(), {'n_neighbors': [1, 3, 5, 7, 10, 15]}),
     #'MLP': (MLPRegressor(), {'hidden_layer_sizes': [(50, 25), (100, 50), (100, 100)], 'alpha': [0.0001, 0.001, 0.01], 'learning_rate_init': [0.001, 0.01, 0.1]}),
 }
 
 # FUNCTIONS --------------------------------------------------------------------
-
 # Train and evaluate a set of regression models individually on training and testing sets.
 def train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names):
 
@@ -89,8 +88,9 @@ def train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, model
 # Perform hyperparameter tuning and evaluation for a set of regression models.
 def hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params):
     print(f"\nHyperparameters")
+    print(models_and_params)
     for model_name, (model, param_grid) in models_and_params.items():
-        grid_search = GridSearchCV(model, param_grid, cv=5)#, scoring='neg_mean_squared_error')
+        grid_search = GridSearchCV(model, param_grid, cv=5)
         grid_search.fit(X_train, y_train)
 
         # Get the best hyperparameters
@@ -108,6 +108,8 @@ def hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, model
         r2 = r2_score(y_test, y_pred)
 
         print(f"{model_name} - Test MSE: {mse:.2f}, RMSE: {rmse:.2f}, MAE: {mae:.2f}, R2: {r2:.2f}")
+
+        # Plot the grid search results
 
 
 # DATA -------------------------------------------------------------------------
@@ -171,15 +173,16 @@ knn_reg.fit(X_train, y_train)
 mlp_reg = MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=500, random_state=42)
 mlp_reg.fit(X_train, y_train)
 
+'''
 # Make predictions and evaluate each model
 models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg, mlp_reg]
 model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors", "MLP"]
 model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
-
 dataprint.print_metrics(model_metrics)
-    
+'''
+
 # Perform hyperparameter tuning for each model
-#hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params)
+hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params)
 
 
 '''
