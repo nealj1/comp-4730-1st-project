@@ -26,10 +26,11 @@ from sklearn.model_selection import learning_curve
 import printing as dataprint
 
 # GLOBAL VARIABLES -------------------------------------------------------------
+filenames = ["Adelaide_Data","Perth_Data", "Sydney_Data", "Tasmania_Data"]
 X_grid_size = 17
 y_grid_size = 17
 power_output = 17
-filenames = ["Adelaide_Data","Perth_Data", "Sydney_Data", "Tasmania_Data"]
+
 # Define the hyperparameter grids for each model
 param_grid = {
     'alpha': [0.0001, 0.001, 0.01, 0.1, 1.0],
@@ -42,7 +43,6 @@ models_and_params = {
     'Lasso Regression': (Lasso(), param_grid),
     #'Decision Tree': (DecisionTreeRegressor(), {'max_depth': [1, 5, 10, 15,20, None]}),
     #'K-Nearest Neighbors': (KNeighborsRegressor(), {'n_neighbors': [1, 3, 5, 7, 10, 15]}),
-    #'MLP': (MLPRegressor(), {'hidden_layer_sizes': [(50, 25), (100, 50), (100, 100)], 'alpha': [0.0001, 0.001, 0.01], 'learning_rate_init': [0.001, 0.01, 0.1]}),
 }
 
 # FUNCTIONS --------------------------------------------------------------------
@@ -68,6 +68,7 @@ def train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, model
 
         # Store metrics in a dictionary for this model
         model_metrics.append({
+
             'Model Name': model_names[i],
             'Training MSE': mse_train,
             'Training RMSE': rmse_train,
@@ -79,9 +80,9 @@ def train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, model
             'Testing R2': r2_test,
         })
 
-        print(f"{model_names[i]} - Training MSE: {mse_train:.2f}, RMSE: {rmse_train:.2f}, MAE: {mae_train:.2f}, R2: {r2_train:.2f}")
-        print(f"{model_names[i]} - Testing MSE: {mse_test:.2f}, RMSE: {rmse_test:.2f}, MAE: {mae_test:.2f}, R2: {r2_test:.2f}")
-
+        print(f"{model_names[i]} - Training Mean Squared Error: {mse_train:.2f}, Training Root Mean Squared Error: {rmse_train:.2f}, Training Mean Absolute Error: {mae_train:.2f}, Training R-squared : {r2_train:.2f}")
+        print(f"{model_names[i]} - Testing Mean Squared Error: {mse_test:.2f}, Testing Root Mean Squared Error: {rmse_test:.2f}, Testing Mean Absolute Error: {mae_test:.2f}, Testing R-squared: {r2_test:.2f}")
+        print()
     return model_metrics
 
 
@@ -109,14 +110,18 @@ def hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, model
 
         print(f"{model_name} - Test MSE: {mse:.2f}, RMSE: {rmse:.2f}, MAE: {mae:.2f}, R2: {r2:.2f}")
 
-        # Plot the grid search results
+        # !!!ADD Plot the grid search results
 
 
 # DATA -------------------------------------------------------------------------
 # Create a DataFrame for the data
 df = pd.read_csv('WECs_DataSet/' + filenames[1] + '.csv', header=None)
 
-# X1, X2, ..., X16, Y1, Y2, ..., Y16, P1, P2, ..., P16, Powerall
+# Set column names for the DataFrame based on the conventions:
+# X1, X2, ..., Xn for X_grid_size columns
+# Y1, Y2, ..., Yn for y_grid_size columns
+# P1, P2, ..., Pn for power_output columns
+# 'Powerall' column at the end
 df.columns = [f'X{i}' for i in range(1, X_grid_size)] +[f'Y{i}' for i in range(1, y_grid_size)]+ [f'P{i}' for i in range(1, power_output)] + ['Powerall']
 
 ### Process the data
@@ -129,10 +134,12 @@ y_set = df['Powerall']
 X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=42) 
 # Determine the maximum target value in both the training and testing sets
 max_target_value = max(np.max(y_train), np.max(y_test))
+
 # Normalize the target values by dividing them by the maximum target value
 # This scales the target values to the range [0, 1]
 y_train = y_train / max_target_value
 y_test = y_test / max_target_value
+
 
 ### Choose form of model:
 # Linear Regression
@@ -143,6 +150,7 @@ linear_reg.fit(X_train, y_train)
 ridge_reg = Ridge(alpha=1.0)
 ridge_reg.fit(X_train, y_train)
 
+'''
 # Lasso Regression
 lasso_reg = Lasso(alpha=1.0)
 lasso_reg.fit(X_train, y_train)
@@ -151,7 +159,6 @@ lasso_reg.fit(X_train, y_train)
 tree_reg = DecisionTreeRegressor(max_depth=10)
 tree_reg.fit(X_train, y_train)
 
-'''
 # Random Forest Regression
 rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
 rf_reg.fit(X_train, y_train)
@@ -163,26 +170,25 @@ gb_reg.fit(X_train, y_train)
 # Support Vector Regression
 svr_reg = SVR(kernel='linear', C=1.0)
 svr_reg.fit(X_train, y_train)
-'''
 
 # K-Nearest Neighbors Regression
 knn_reg = KNeighborsRegressor(n_neighbors=5)
 knn_reg.fit(X_train, y_train)
-
-# MLP (Multi-layer Perceptron) Regression (Neural Network)
-mlp_reg = MLPRegressor(hidden_layer_sizes=(100, 50), max_iter=500, random_state=42)
-mlp_reg.fit(X_train, y_train)
-
 '''
+
 # Make predictions and evaluate each model
-models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg, mlp_reg]
-model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors", "MLP"]
+#model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
+#models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
+model_names = ["Linear Regression", "Ridge Regression"]
+models = [linear_reg, ridge_reg]
 model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
 dataprint.print_metrics(model_metrics)
-'''
 
+
+'''
 # Perform hyperparameter tuning for each model
 hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params)
+'''
 
 
 '''
@@ -196,3 +202,31 @@ cv_rmse_scores = np.sqrt(-cv_scores)
 print("Cross-Validation RMSE Scores:")
 print(cv_rmse_scores)
 '''
+
+
+# Assuming you have the actual and predicted values for both models
+y_train_actual_linear = linear_reg.predict(X_train) * max_target_value
+y_test_actual_linear = linear_reg.predict(X_test) * max_target_value
+
+y_train_actual_ridge = ridge_reg.predict(X_train) * max_target_value
+y_test_actual_ridge = ridge_reg.predict(X_test) * max_target_value
+
+# Create scatter plots for training and testing datasets
+plt.figure(figsize=(12, 6))
+
+# Scatter plot for Linear Regression - Training Data
+plt.subplot(1, 2, 1)
+plt.scatter(y_train, y_train_actual_linear, alpha=0.5)
+plt.xlabel("Actual Values (Training)")
+plt.ylabel("Predicted Values (Linear Regression)")
+plt.title("Linear Regression - Training Data")
+
+# Scatter plot for Linear Regression - Testing Data
+plt.subplot(1, 2, 2)
+plt.scatter(y_test, y_test_actual_linear, alpha=0.5)
+plt.xlabel("Actual Values (Testing)")
+plt.ylabel("Predicted Values (Linear Regression)")
+plt.title("Linear Regression - Testing Data")
+
+plt.tight_layout()
+plt.show()
