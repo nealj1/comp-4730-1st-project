@@ -110,9 +110,6 @@ def hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, model
 
         print(f"{model_name} - Test MSE: {mse:.2f}, RMSE: {rmse:.2f}, MAE: {mae:.2f}, R2: {r2:.2f}")
 
-        # !!!ADD Plot the grid search results
-
-
 # DATA -------------------------------------------------------------------------
 # Create a DataFrame for the data
 df = pd.read_csv('WECs_DataSet/' + filenames[1] + '.csv', header=None)
@@ -124,12 +121,12 @@ df = pd.read_csv('WECs_DataSet/' + filenames[1] + '.csv', header=None)
 # 'Powerall' column at the end
 df.columns = [f'X{i}' for i in range(1, X_grid_size)] +[f'Y{i}' for i in range(1, y_grid_size)]+ [f'P{i}' for i in range(1, power_output)] + ['Powerall']
 
-### Process the data
+### PROCESS THE DATA -------------------------------------------------------------------------
 # Define input features (X) and target variable (y)
 X_set = df.iloc[:, :-1]
 y_set = df['Powerall']
 
-### Split data into training and testing sets
+### SPLIT DATA -------------------------------------------------------------------------
 # Split the dataset into training and testing sets with a 80-20 ratio
 X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=42) 
 # Determine the maximum target value in both the training and testing sets
@@ -150,10 +147,10 @@ linear_reg.fit(X_train, y_train)
 ridge_reg = Ridge(alpha=1.0)
 ridge_reg.fit(X_train, y_train)
 
-'''
 # Lasso Regression
 lasso_reg = Lasso(alpha=1.0)
 lasso_reg.fit(X_train, y_train)
+
 
 # Decision Tree Regression
 tree_reg = DecisionTreeRegressor(max_depth=10)
@@ -174,15 +171,36 @@ svr_reg.fit(X_train, y_train)
 # K-Nearest Neighbors Regression
 knn_reg = KNeighborsRegressor(n_neighbors=5)
 knn_reg.fit(X_train, y_train)
-'''
+
+# BASELINE MODEL
+# Calculate the mean of the target variable (power output) on the training dataset
+baseline_prediction = y_train.mean()  # You can also use median()
+
+# Create an array of baseline predictions for the testing dataset
+baseline_predictions_test = np.full_like(y_test, baseline_prediction)
+
+# Calculate evaluation metrics for the baseline model
+baseline_mse_test = mean_squared_error(y_test, baseline_predictions_test)
+baseline_rmse_test = np.sqrt(baseline_mse_test)
+baseline_mae_test = mean_absolute_error(y_test, baseline_predictions_test)
+baseline_r2_test = r2_score(y_test, baseline_predictions_test)
+
+# Print the evaluation metrics for the baseline model
+print("Baseline Model - Testing MSE: {:.2f}, RMSE: {:.2f}, MAE: {:.2f}, R2: {:.2f}".format(
+    baseline_mse_test, baseline_rmse_test, baseline_mae_test, baseline_r2_test))
+
 
 # Make predictions and evaluate each model
-#model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
-#models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
-model_names = ["Linear Regression", "Ridge Regression"]
-models = [linear_reg, ridge_reg]
+# model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
+# models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
+# model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression"]
+# models = [linear_reg, ridge_reg, lasso_reg]
+model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
+models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
 model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
 dataprint.print_metrics(model_metrics)
+# Create a DataFrame from the collected model metrics
+df_metrics = pd.DataFrame(model_metrics)
 
 
 '''
@@ -190,43 +208,25 @@ dataprint.print_metrics(model_metrics)
 hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params)
 '''
 
+# Initialize an empty dictionary to store the cross-validation RMSE scores for each model
+cv_rmse_scores_dict = {}
 
+
+# Perform cross-validation for each model
+for model, model_name in zip(models, model_names):
+    cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
+    cv_rmse_scores = np.sqrt(-cv_scores)
+    cv_rmse_mean = np.mean(cv_rmse_scores)
+    
+    # Store the cross-validation RMSE scores in the dictionary
+    cv_rmse_scores_dict[model_name] = cv_rmse_scores
+    
+    print(f"Cross-Validation RMSE Scores for {model_name}:")
+    print(cv_rmse_scores)
+    print(f"Mean RMSE for {model_name}: {cv_rmse_mean:.2f}\n")
+
+
+# PRINTING
 '''
-cv_scores = cross_val_score(linear_reg, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
-cv_rmse_scores = np.sqrt(-cv_scores)
-print("Cross-Validation RMSE Scores:")
-print(cv_rmse_scores)
-
-cv_scores = cross_val_score(linear_reg, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
-cv_rmse_scores = np.sqrt(-cv_scores)
-print("Cross-Validation RMSE Scores:")
-print(cv_rmse_scores)
+dataprint.print_comparision(df_metrics)
 '''
-
-
-# Assuming you have the actual and predicted values for both models
-y_train_actual_linear = linear_reg.predict(X_train) * max_target_value
-y_test_actual_linear = linear_reg.predict(X_test) * max_target_value
-
-y_train_actual_ridge = ridge_reg.predict(X_train) * max_target_value
-y_test_actual_ridge = ridge_reg.predict(X_test) * max_target_value
-
-# Create scatter plots for training and testing datasets
-plt.figure(figsize=(12, 6))
-
-# Scatter plot for Linear Regression - Training Data
-plt.subplot(1, 2, 1)
-plt.scatter(y_train, y_train_actual_linear, alpha=0.5)
-plt.xlabel("Actual Values (Training)")
-plt.ylabel("Predicted Values (Linear Regression)")
-plt.title("Linear Regression - Training Data")
-
-# Scatter plot for Linear Regression - Testing Data
-plt.subplot(1, 2, 2)
-plt.scatter(y_test, y_test_actual_linear, alpha=0.5)
-plt.xlabel("Actual Values (Testing)")
-plt.ylabel("Predicted Values (Linear Regression)")
-plt.title("Linear Regression - Testing Data")
-
-plt.tight_layout()
-plt.show()

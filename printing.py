@@ -1,5 +1,6 @@
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def print_total_heatmap_plot(X,y,po):
     # Create a scatter plot for all data points
@@ -106,3 +107,13 @@ def print_metrics(model_metrics):
         print("Training R2:", metrics['Training R2'])   
         print("Testing R2:", metrics['Testing R2'])
         print()
+
+def print_comparision(df_metrics):
+    # Create a bar chart comparing RMSE values
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x='Model Name', y='Testing RMSE', data=df_metrics)
+    plt.xlabel('Model Name')
+    plt.ylabel('Testing Root Mean Squared Error (RMSE)')
+    plt.title('Model Comparison - Testing RMSE')
+    plt.xticks(rotation=45)
+    plt.show()
