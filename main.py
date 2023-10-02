@@ -259,7 +259,15 @@ for model, model_name in zip(models, model_names):
     print(f"Mean R2 for {model_name}: {cv_r2_mean:.2f}\n")
 
 
+# Print the dictionaries with cross-validation scores
+print("Cross-Validation MSE Scores:")
+print(cv_mse_scores_dict)
+print("Cross-Validation RMSE Scores:")
 print(cv_rmse_scores_dict)
+print("Cross-Validation MAE Scores:")
+print(cv_mae_scores_dict)
+print("Cross-Validation R2 Scores:")
+print(cv_r2_scores_dict)
 
 # PRINTING
 '''
