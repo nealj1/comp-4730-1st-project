@@ -198,12 +198,12 @@ print("Baseline Model - Testing MSE: {:.2f}, RMSE: {:.2f}, MAE: {:.2f}, R2: {:.2
 # models = [linear_reg, ridge_reg, lasso_reg]
 model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
 models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
-'''
+
 model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
 dataprint.print_metrics(model_metrics)
 # Create a DataFrame from the collected model metrics
 df_metrics = pd.DataFrame(model_metrics)
-'''
+
 
 
 
@@ -215,23 +215,52 @@ hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_an
 
 
 # Initialize an empty dictionary to store the cross-validation RMSE scores for each model
+cv_mse_scores_dict = {}
 cv_rmse_scores_dict = {}
+cv_mae_scores_dict = {}
+cv_r2_scores_dict = {}
 
 
 # Perform cross-validation for each model
 for model, model_name in zip(models, model_names):
+
     cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
     cv_rmse_scores = np.sqrt(-cv_scores)
-    cv_rmse_mean = np.mean(cv_rmse_scores)
+    cv_rmse_mean = cv_rmse_scores.mean()
+
+    cv_mse_mean = -np.mean(cv_scores)  # Calculate the mean squared error
+
+    cv_mae_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_mean_absolute_error')
+    cv_mae_mean = -np.mean(cv_mae_scores)  # Calculate the mean absolute error
+
+    cv_r2_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='r2')
+    cv_r2_mean = np.mean(cv_r2_scores)  # Calculate the R-squared score
     
-    # Store the cross-validation RMSE scores in the dictionary
-    cv_rmse_scores_dict[model_name] = cv_rmse_scores
+    # Store the cross-validation scores in the dictionaries
+    cv_mse_scores_dict[model_name] = cv_mse_mean
+    cv_rmse_scores_dict[model_name] = cv_rmse_mean
+    cv_mae_scores_dict[model_name] = cv_mae_mean
+    cv_r2_scores_dict[model_name] = cv_r2_mean
+    
+    print(f"Cross-Validation MSE Scores for {model_name}:")
+    print(-cv_scores)
+    print(f"Mean MSE for {model_name}: {cv_mse_mean:.2f}\n")
     
     print(f"Cross-Validation RMSE Scores for {model_name}:")
     print(cv_rmse_scores)
     print(f"Mean RMSE for {model_name}: {cv_rmse_mean:.2f}\n")
+    
+    print(f"Cross-Validation MAE Scores for {model_name}:")
+    print(-cv_mae_scores)
+    print(f"Mean MAE for {model_name}: {cv_mae_mean:.2f}\n")
+    
+    print(f"Cross-Validation R2 Scores for {model_name}:")
+    print(cv_r2_scores)
+    print(f"Mean R2 for {model_name}: {cv_r2_mean:.2f}\n")
+
 
 print(cv_rmse_scores_dict)
+
 # PRINTING
 '''
 dataprint.print_comparision(df_metrics)
