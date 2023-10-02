@@ -117,3 +117,29 @@ def print_comparision(df_metrics):
     plt.title('Model Comparison - Testing RMSE')
     plt.xticks(rotation=45)
     plt.show()
+
+def print_compare_5fold_linegraph(cv_rmse_scores_dict):
+    # Create a figure and axis
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Create an array of indices for the x-axis (assuming 5 cross-validation folds)
+    x = np.arange(1, 6)
+
+    # Plot the RMSE scores as lines for each model
+    for model_name, scores in cv_rmse_scores_dict.items():
+        ax.plot(x, scores, marker='o', label=model_name)
+
+    # Set the x-axis labels and title
+    ax.set_xlabel('Cross-Validation Fold')
+    ax.set_ylabel('RMSE')
+    ax.set_title('RMSE Scores for Different Models')
+    ax.set_xticks(x)
+    ax.set_xticklabels([f'Fold {i}' for i in x])
+
+    # Add a legend
+    ax.legend()
+
+    # Show the plot
+    plt.tight_layout()
+    plt.grid(True)
+    plt.show()
