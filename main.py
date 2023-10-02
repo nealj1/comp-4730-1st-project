@@ -23,6 +23,7 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import learning_curve
+from sklearn.preprocessing import MinMaxScaler
 import printing as dataprint
 
 # GLOBAL VARIABLES -------------------------------------------------------------
@@ -121,6 +122,11 @@ df = pd.read_csv('WECs_DataSet/' + filenames[1] + '.csv', header=None)
 # 'Powerall' column at the end
 df.columns = [f'X{i}' for i in range(1, X_grid_size)] +[f'Y{i}' for i in range(1, y_grid_size)]+ [f'P{i}' for i in range(1, power_output)] + ['Powerall']
 
+# This scales the target values to the range [0, 1]
+scales = MinMaxScaler()
+df = pd.DataFrame(scales.fit_transform(df), index= df.index, columns=df.columns)
+
+
 ### PROCESS THE DATA -------------------------------------------------------------------------
 # Define input features (X) and target variable (y)
 X_set = df.iloc[:, :-1]
@@ -131,11 +137,6 @@ y_set = df['Powerall']
 X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=42) 
 # Determine the maximum target value in both the training and testing sets
 max_target_value = max(np.max(y_train), np.max(y_test))
-
-# Normalize the target values by dividing them by the maximum target value
-# This scales the target values to the range [0, 1]
-y_train = y_train / max_target_value
-y_test = y_test / max_target_value
 
 
 ### Choose form of model:
@@ -155,7 +156,7 @@ lasso_reg.fit(X_train, y_train)
 # Decision Tree Regression
 tree_reg = DecisionTreeRegressor(max_depth=10)
 tree_reg.fit(X_train, y_train)
-
+'''
 # Random Forest Regression
 rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
 rf_reg.fit(X_train, y_train)
@@ -167,7 +168,7 @@ gb_reg.fit(X_train, y_train)
 # Support Vector Regression
 svr_reg = SVR(kernel='linear', C=1.0)
 svr_reg.fit(X_train, y_train)
-
+'''
 # K-Nearest Neighbors Regression
 knn_reg = KNeighborsRegressor(n_neighbors=5)
 knn_reg.fit(X_train, y_train)
@@ -197,16 +198,21 @@ print("Baseline Model - Testing MSE: {:.2f}, RMSE: {:.2f}, MAE: {:.2f}, R2: {:.2
 # models = [linear_reg, ridge_reg, lasso_reg]
 model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
 models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
+'''
 model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
 dataprint.print_metrics(model_metrics)
 # Create a DataFrame from the collected model metrics
 df_metrics = pd.DataFrame(model_metrics)
+'''
+
 
 
 '''
 # Perform hyperparameter tuning for each model
 hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params)
 '''
+
+
 
 # Initialize an empty dictionary to store the cross-validation RMSE scores for each model
 cv_rmse_scores_dict = {}
@@ -225,8 +231,33 @@ for model, model_name in zip(models, model_names):
     print(cv_rmse_scores)
     print(f"Mean RMSE for {model_name}: {cv_rmse_mean:.2f}\n")
 
-
+print(cv_rmse_scores_dict)
 # PRINTING
 '''
 dataprint.print_comparision(df_metrics)
 '''
+
+# Create a figure and axis
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create an array of indices for the x-axis (assuming 5 cross-validation folds)
+x = np.arange(1, 6)
+
+# Plot the RMSE scores as lines for each model
+for model_name, scores in cv_rmse_scores_dict.items():
+    ax.plot(x, scores, marker='o', label=model_name)
+
+# Set the x-axis labels and title
+ax.set_xlabel('Cross-Validation Fold')
+ax.set_ylabel('RMSE')
+ax.set_title('RMSE Scores for Different Models')
+ax.set_xticks(x)
+ax.set_xticklabels([f'Fold {i}' for i in x])
+
+# Add a legend
+ax.legend()
+
+# Show the plot
+plt.tight_layout()
+plt.grid(True)
+plt.show()
