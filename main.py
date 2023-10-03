@@ -200,7 +200,8 @@ model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Dec
 models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
 
 model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
-dataprint.print_metrics(model_metrics)
+
+
 # Create a DataFrame from the collected model metrics
 df_metrics = pd.DataFrame(model_metrics)
 
@@ -258,10 +259,10 @@ for model, model_name in zip(models, model_names):
         'mean': cv_r2_mean
     }
 
-dataprint.print_cross_validation_data(cv_metrics_dict)
+print(cv_metrics_dict)
 
 # PRINTING
-'''
-dataprint.print_comparision(df_metrics)
-dataprint.print_compare_5fold_linegraph(cv_rmse_scores_dict)
-'''
+dataprint.print_metrics(model_metrics)
+dataprint.print_cross_validation_data(cv_metrics_dict)
+dataprint.print_compare_5fold_bargraph(cv_metrics_dict)
+dataprint.print_all_graphs_individual_cs_scores(cv_metrics_dict)

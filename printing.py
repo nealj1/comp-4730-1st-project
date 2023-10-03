@@ -1,6 +1,7 @@
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 def print_total_heatmap_plot(X,y,po):
     # Create a scatter plot for all data points
@@ -108,41 +109,57 @@ def print_metrics(model_metrics):
         print("Testing R2:", metrics['Testing R2'])
         print()
 
-def print_comparision(df_metrics):
-    # Create a bar chart comparing RMSE values
-    plt.figure(figsize=(10, 6))
-    sns.barplot(x='Model Name', y='Testing RMSE', data=df_metrics)
-    plt.xlabel('Model Name')
-    plt.ylabel('Testing Root Mean Squared Error (RMSE)')
-    plt.title('Model Comparison - Testing RMSE')
-    plt.xticks(rotation=45)
-    plt.show()
 
-def print_compare_5fold_linegraph(cv_rmse_scores_dict):
-    # Create a figure and axis
-    fig, ax = plt.subplots(figsize=(10, 6))
+def print_compare_5fold_bargraph(cv_rmse_scores_dict):
+    # List of metrics
+    metrics = ['MSE', 'RMSE', 'MAE', 'R2']
 
-    # Create an array of indices for the x-axis (assuming 5 cross-validation folds)
-    x = np.arange(1, 6)
+    # Extract model names and metric means
+    model_names = list(cv_rmse_scores_dict.keys())
+    metric_means = {metric: [model_data[metric]['mean'] for model_data in cv_rmse_scores_dict.values()] for metric in metrics}
 
-    # Plot the RMSE scores as lines for each model
-    for model_name, scores in cv_rmse_scores_dict.items():
-        ax.plot(x, scores, marker='o', label=model_name)
+    # Create figure and axes
+    fig, ax = plt.subplots(figsize=(12, 6))
 
-    # Set the x-axis labels and title
-    ax.set_xlabel('Cross-Validation Fold')
-    ax.set_ylabel('RMSE')
-    ax.set_title('RMSE Scores for Different Models')
-    ax.set_xticks(x)
-    ax.set_xticklabels([f'Fold {i}' for i in x])
+    # Set the width of each bar
+    bar_width = 0.15
+    index = np.arange(len(model_names))
 
-    # Add a legend
+    # Create bars for each metric
+    for i, metric in enumerate(metrics):
+        ax.bar(index + i * bar_width, metric_means[metric], bar_width, label=metric)
+
+    # Configure plot
+    ax.set_xlabel('Model')
+    ax.set_ylabel('Mean Metric Value')
+    ax.set_title('Mean Cross-Validation Metrics by Model')
+    ax.set_xticks(index + bar_width * (len(metrics) - 1) / 2)
+    ax.set_xticklabels(model_names, rotation=45, ha='right')
     ax.legend()
 
-    # Show the plot
     plt.tight_layout()
-    plt.grid(True)
     plt.show()
+
+def print_all_graphs_individual_cs_scores(cv_metrics_dict):
+    # Iterate over models and create separate graphs for each model
+    for model_name, model_data in cv_metrics_dict.items():
+        fig, ax = plt.subplots(figsize=(10, 6))
+        
+        for metric, metric_data in model_data.items():
+            scores = metric_data['scores']
+            mean_score = metric_data['mean']
+            
+            ax.plot(np.arange(1, len(scores) + 1), scores, label=f'{metric} (Individual)')
+            ax.axhline(y=mean_score, color='red', linestyle='--', label=f'{metric} (Mean)')
+        
+        # Configure graph
+        ax.set_title(f'{model_name} - Cross-Validation Scores')
+        ax.set_xlabel('Cross-Validation Fold')
+        ax.set_ylabel('Score')
+        ax.legend()
+        
+        plt.tight_layout()
+        plt.show()
 
 def print_cross_validation_data(cv_metrics_dict):
     # Print cross-validation metrics for each model
