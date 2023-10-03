@@ -143,3 +143,12 @@ def print_compare_5fold_linegraph(cv_rmse_scores_dict):
     plt.tight_layout()
     plt.grid(True)
     plt.show()
+
+def print_cross_validation_data(cv_metrics_dict):
+    # Print cross-validation metrics for each model
+    for model_name, metrics_dict in cv_metrics_dict.items():
+        print(f"Model: {model_name}")
+        for metric_name, metric_values in metrics_dict.items():
+            print(f"Metric: {metric_name}")
+            print(f"Mean {metric_name}: {metric_values['mean']}")
+            print(f"Individual {metric_name} scores: {metric_values['scores']}\n")
