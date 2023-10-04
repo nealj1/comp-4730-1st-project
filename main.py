@@ -60,15 +60,21 @@ for column_name in question_mark_columns:
 #Drop Columns
 mushroom_data = mushroom_data.drop(columns=['stalk-root']) # column has lots of ?
 mushroom_data = mushroom_data.drop(columns=['veil-type']) # is a constant column
+
 #Encodes
 mushroom_data = pd.get_dummies(mushroom_data)
-
+#or this one ????
 '''
 # Encode categorical features
 label_encoder = LabelEncoder()
 for column in mushroom_data.columns:
     mushroom_data[column] = label_encoder.fit_transform(mushroom_data[column])
+'''
 
+
+
+# Do ai training stuff
+'''
 # Split the data into train and test sets
 X = mushroom_data.drop('class', axis=1)
 y = mushroom_data['class']
