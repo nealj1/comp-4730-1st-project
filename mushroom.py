@@ -81,6 +81,7 @@ if __name__ == "__main__":
     mushroom_data = read_data(data_path)
 
     #handle missing values
+    # ADD returned and did a loop dbl check main and add in here
     check_missing_values(mushroom_data)
 
     mushroom_data = mushroom_data.drop(columns=["stalk-root"]) # we end up dropping this because it has too many missing values
