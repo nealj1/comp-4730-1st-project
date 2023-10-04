@@ -1,0 +1,3 @@
+decision tree, perfect aline cuts
+always axis orthogonal
+if you dont grow as long, generalize better
