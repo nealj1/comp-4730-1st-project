@@ -59,7 +59,7 @@ for column_name in question_mark_columns:
 
 #Drop Columns
 mushroom_data = mushroom_data.drop(columns=['stalk-root']) # column has lots of ?
-mushroom_data = mushroom_data.drop(columns=['veil-type']) # is a constant column
+mushroom_data = mushroom_data.drop(columns=['veil-type']) # is a constant column so does not add anything
 
 #Encodes
 mushroom_data = pd.get_dummies(mushroom_data)
