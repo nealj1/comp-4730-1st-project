@@ -11,6 +11,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+
 
 
 def read_data(path):
@@ -49,6 +52,13 @@ def preprocess_data(df):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, shuffle=True)
     return x_train, x_test, y_train, y_test, mappings
 
+def train_and_evaluate_model(model, x_train, y_train, x_test, y_test):
+    print(f"\n starting {model.__class__.__name__}....")
+    model.fit(x_train, y_train)
+    y_pred = model.predict(x_test)
+    print_metrics(y_test, y_pred)
+
+
 def print_metrics(y_test, y_pred):
     
     accuracy = accuracy_score(y_test, y_pred)
@@ -80,21 +90,16 @@ if __name__ == "__main__":
     mushroom_data = mushroom_data.drop(columns=["veil-type"]) # we drop it 
 
     x_train, x_test, y_train, y_test, mappings  = preprocess_data(mushroom_data)
+    
+    models = [
+        LogisticRegression(),
+        DecisionTreeClassifier(criterion="gini", max_depth=3, random_state=0),
+        RandomForestClassifier(criterion="entropy", max_depth=4, random_state=0),
+        GaussianNB(),
+        SVC(kernel="linear", C=0.025, random_state=42)
+    ]
+    
+    
+    for model in models:
+        train_and_evaluate_model(model, x_train, y_train, x_test, y_test)
 
-    print("\nStarting Logistic Regression....")
-    log_model = LogisticRegression()
-    log_model.fit(x_train, y_train)
-    y_pred = log_model.predict(x_test)
-    print_metrics(y_test, y_pred)
-    
-    print("\nStarting Decision Tree Classifier....")
-    dtf = DecisionTreeClassifier(criterion='gini', max_depth=3, random_state=0)
-    dtf.fit(x_train, y_train)
-    y_pred = dtf.predict(x_test)
-    print_metrics(y_test, y_pred)
-    
-    print("\nStarting Random Forest Classifier....")
-    rfc = RandomForestClassifier(criterion="entropy", max_depth=4, random_state=0)
-    rfc.fit(x_train, y_train)
-    y_pred = rfc.predict(x_test)
-    print_metrics(y_test, y_pred)
