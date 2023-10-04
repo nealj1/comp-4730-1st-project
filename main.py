@@ -1,268 +1,89 @@
-# Choose a dataset with at least 5000 instances and 20 attributes for classification or regression. Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using. 
-
-# MODULES ----------------------------------------------------------------------
+# PACKAGES ---------------------------------------------------------------------
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from mpl_toolkits import mplot3d
-from matplotlib.tri import Triangulation
-from scipy.interpolate import griddata
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib as mpl
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.svm import SVR
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import r2_score
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import learning_curve
-from sklearn.preprocessing import MinMaxScaler
-import printing as dataprint
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-# GLOBAL VARIABLES -------------------------------------------------------------
-filenames = ["Adelaide_Data","Perth_Data", "Sydney_Data", "Tasmania_Data"]
-X_grid_size = 17
-y_grid_size = 17
-power_output = 17
+#SETTINGS ---------------------------------------------------------------
+pd.set_option('display.max_colwidth', None)
 
-# Define the hyperparameter grids for each model
-param_grid = {
-    'alpha': [0.0001, 0.001, 0.01, 0.1, 1.0],
-}
-
-# Create a dictionary of models and their respective parameter grids
-models_and_params = {
-    'Linear Regression': (LinearRegression(), {}),
-    'Ridge Regression': (Ridge(), param_grid),
-    'Lasso Regression': (Lasso(), param_grid),
-    #'Decision Tree': (DecisionTreeRegressor(), {'max_depth': [1, 5, 10, 15,20, None]}),
-    #'K-Nearest Neighbors': (KNeighborsRegressor(), {'n_neighbors': [1, 3, 5, 7, 10, 15]}),
-}
-
-# FUNCTIONS --------------------------------------------------------------------
-# Train and evaluate a set of regression models individually on training and testing sets.
-def train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names):
-
-    model_metrics = []  # List to store metrics for each model
-
-    for i, model in enumerate(models):
-        # Train and evaluate the model on the training set
-        y_pred_train = model.predict(X_train)
-        mse_train = mean_squared_error(y_train, y_pred_train)
-        rmse_train = np.sqrt(mse_train)
-        mae_train = mean_absolute_error(y_train, y_pred_train)
-        r2_train = r2_score(y_train, y_pred_train)
-
-        # Train and evaluate the model on the testing set
-        y_pred_test = model.predict(X_test)
-        mse_test = mean_squared_error(y_test, y_pred_test)
-        rmse_test = np.sqrt(mse_test)
-        mae_test = mean_absolute_error(y_test, y_pred_test)
-        r2_test = r2_score(y_test, y_pred_test)
-
-        # Store metrics in a dictionary for this model
-        model_metrics.append({
-
-            'Model Name': model_names[i],
-            'Training MSE': mse_train,
-            'Training RMSE': rmse_train,
-            'Training MAE': mae_train,
-            'Training R2': r2_train,
-            'Testing MSE': mse_test,
-            'Testing RMSE': rmse_test,
-            'Testing MAE': mae_test,
-            'Testing R2': r2_test,
-        })
-
-        print(f"{model_names[i]} - Training Mean Squared Error: {mse_train:.2f}, Training Root Mean Squared Error: {rmse_train:.2f}, Training Mean Absolute Error: {mae_train:.2f}, Training R-squared : {r2_train:.2f}")
-        print(f"{model_names[i]} - Testing Mean Squared Error: {mse_test:.2f}, Testing Root Mean Squared Error: {rmse_test:.2f}, Testing Mean Absolute Error: {mae_test:.2f}, Testing R-squared: {r2_test:.2f}")
-        print()
-    return model_metrics
+# Functions -------------------------------------------------------------
 
 
-# Perform hyperparameter tuning and evaluation for a set of regression models.
-def hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params):
-    print(f"\nHyperparameters")
-    print(models_and_params)
-    for model_name, (model, param_grid) in models_and_params.items():
-        grid_search = GridSearchCV(model, param_grid, cv=5)
-        grid_search.fit(X_train, y_train)
+# Load the dataset
+mushroom_data = pd.read_csv('Mushroom/agaricus-lepiota.csv')
 
-        # Get the best hyperparameters
-        best_params = grid_search.best_params_
-        print(f"Best Hyperparameters for {model_name}: {best_params}")
+def summary(df):
+    summary_df = pd.DataFrame(df.dtypes, columns=['dtypes'])
+    summary_df['duplicated'] = df.duplicated().sum()
+    summary_df['missing#'] = df.isna().sum()
+    summary_df['missing%'] = (df.isna().sum()) / len(df)
+    summary_df['uniques'] = df.nunique().values
+    summary_df['count'] = df.count().values
+    # Add a column 'unique_values' containing unique values for each column
+    unique_values = []
+    for column in df.columns:
+        unique_values.append(df[column].unique())
+    summary_df['unique_values'] = unique_values
 
-        # Get the best model with the tuned hyperparameters
-        best_model = grid_search.best_estimator_
-
-        # Evaluate the best model on the test set
-        y_pred = best_model.predict(X_test)
-        mse = mean_squared_error(y_test, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-
-        print(f"{model_name} - Test MSE: {mse:.2f}, RMSE: {rmse:.2f}, MAE: {mae:.2f}, R2: {r2:.2f}")
-
-# DATA -------------------------------------------------------------------------
-# Create a DataFrame for the data
-df = pd.read_csv('WECs_DataSet/' + filenames[1] + '.csv', header=None)
-
-# Set column names for the DataFrame based on the conventions:
-# X1, X2, ..., Xn for X_grid_size columns
-# Y1, Y2, ..., Yn for y_grid_size columns
-# P1, P2, ..., Pn for power_output columns
-# 'Powerall' column at the end
-df.columns = [f'X{i}' for i in range(1, X_grid_size)] +[f'Y{i}' for i in range(1, y_grid_size)]+ [f'P{i}' for i in range(1, power_output)] + ['Powerall']
-
-# This scales the target values to the range [0, 1]
-scales = MinMaxScaler()
-df = pd.DataFrame(scales.fit_transform(df), index= df.index, columns=df.columns)
+    return summary_df
 
 
-### PROCESS THE DATA -------------------------------------------------------------------------
-# Define input features (X) and target variable (y)
-X_set = df.iloc[:, :-1]
-y_set = df['Powerall']
+def columns_with_question_marks(df):
+    
+    columns_with_question_mark = []
+    # Loop through all columns in the DataFrame
+    for column in df.columns:
+        # Create a boolean mask for rows with "?"
+        mask = df[column] == "?"
 
-### SPLIT DATA -------------------------------------------------------------------------
-# Split the dataset into training and testing sets with a 80-20 ratio
-X_train, X_test, y_train, y_test = train_test_split(X_set, y_set, test_size=0.2, random_state=42) 
-# Determine the maximum target value in both the training and testing sets
-max_target_value = max(np.max(y_train), np.max(y_test))
+        # Use the mask to filter the rows
+        rows_with_question_mark = df[mask]
 
+        # Check if there are any rows with "?"
+        if not rows_with_question_mark.empty:
+            columns_with_question_mark.append(column)
+    return columns_with_question_mark
 
-### Choose form of model:
-# Linear Regression
-linear_reg = LinearRegression()
-linear_reg.fit(X_train, y_train)
+# Print or display the summary DataFrame
+df_summary = summary(mushroom_data)
+print(df_summary)
 
-# Ridge Regression
-ridge_reg = Ridge(alpha=1.0)
-ridge_reg.fit(X_train, y_train)
+# Check for ? in the data
+question_mark_columns = columns_with_question_marks(mushroom_data)
+for column_name in question_mark_columns:
+    count_question_marks = mushroom_data[column_name].str.count("\?").sum()
+    print(f"Number of '?' in '{column_name}': {count_question_marks}")
 
-# Lasso Regression
-lasso_reg = Lasso(alpha=1.0)
-lasso_reg.fit(X_train, y_train)
-
-
-# Decision Tree Regression
-tree_reg = DecisionTreeRegressor(max_depth=10)
-tree_reg.fit(X_train, y_train)
-'''
-# Random Forest Regression
-rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
-rf_reg.fit(X_train, y_train)
-
-# Gradient Boosting Regression
-gb_reg = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, random_state=42)
-gb_reg.fit(X_train, y_train)
-
-# Support Vector Regression
-svr_reg = SVR(kernel='linear', C=1.0)
-svr_reg.fit(X_train, y_train)
-'''
-# K-Nearest Neighbors Regression
-knn_reg = KNeighborsRegressor(n_neighbors=5)
-knn_reg.fit(X_train, y_train)
-
-# BASELINE MODEL
-# Calculate the mean of the target variable (power output) on the training dataset
-baseline_prediction = y_train.mean()  # You can also use median()
-
-# Create an array of baseline predictions for the testing dataset
-baseline_predictions_test = np.full_like(y_test, baseline_prediction)
-
-# Calculate evaluation metrics for the baseline model
-baseline_mse_test = mean_squared_error(y_test, baseline_predictions_test)
-baseline_rmse_test = np.sqrt(baseline_mse_test)
-baseline_mae_test = mean_absolute_error(y_test, baseline_predictions_test)
-baseline_r2_test = r2_score(y_test, baseline_predictions_test)
-
-# Print the evaluation metrics for the baseline model
-print("Baseline Model - Testing MSE: {:.2f}, RMSE: {:.2f}, MAE: {:.2f}, R2: {:.2f}".format(
-    baseline_mse_test, baseline_rmse_test, baseline_mae_test, baseline_r2_test))
-
-
-# Make predictions and evaluate each model
-# model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
-# models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
-# model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression"]
-# models = [linear_reg, ridge_reg, lasso_reg]
-model_names = ["Linear Regression", "Ridge Regression", "Lasso Regression", "Decision Tree", "K-Nearest Neighbors"]
-models = [linear_reg, ridge_reg, lasso_reg, tree_reg, knn_reg]
-
-model_metrics = train_and_evaluate_individual_models(X_train, y_train, X_test, y_test, models, model_names)
-
-
-# Create a DataFrame from the collected model metrics
-df_metrics = pd.DataFrame(model_metrics)
-
-
-
+#Drop Columns
+mushroom_data = mushroom_data.drop(columns=['stalk-root']) # column has lots of ?
+mushroom_data = mushroom_data.drop(columns=['veil-type']) # is a constant column
+#Encodes
+mushroom_data = pd.get_dummies(mushroom_data)
 
 '''
-# Perform hyperparameter tuning for each model
-hyperparameter_tuning_and_evaluation(X_train, y_train, X_test, y_test, models_and_params)
+# Encode categorical features
+label_encoder = LabelEncoder()
+for column in mushroom_data.columns:
+    mushroom_data[column] = label_encoder.fit_transform(mushroom_data[column])
+
+# Split the data into train and test sets
+X = mushroom_data.drop('class', axis=1)
+y = mushroom_data['class']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create and train a Random Forest classifier
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+
+# Predict on the test set
+y_pred = clf.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print(classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 '''
-
-
-
-# Define a dictionary to store cross-validation metrics for each model
-cv_metrics_dict = {}
-
-
-# Perform cross-validation for each model
-for model, model_name in zip(models, model_names):
-    # Initialize a dictionary for the current model
-    cv_metrics_dict[model_name] = {
-        'MSE': {},
-        'RMSE': {},
-        'MAE': {},
-        'R2': {}
-    }
-    
-    cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
-    cv_mse_mean = -np.mean(cv_scores)  # Calculate the mean squared error
-    
-    cv_rmse_scores = np.sqrt(-cv_scores)
-    cv_rmse_mean = cv_rmse_scores.mean()
-    
-    cv_mae_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_mean_absolute_error')
-    cv_mae_mean = -np.mean(cv_mae_scores)  # Calculate the mean absolute error
-
-    cv_r2_scores = cross_val_score(model, X_train, y_train, cv=5, scoring='r2')
-    cv_r2_mean = np.mean(cv_r2_scores)  # Calculate the R-squared score
-    
-    # Store the cross-validation scores in the model-specific dictionary
-    cv_metrics_dict[model_name]['MSE'] = {
-        'scores': cv_scores,
-        'mean': cv_mse_mean
-    }
-    cv_metrics_dict[model_name]['RMSE'] = {
-        'scores': cv_rmse_scores,
-        'mean': cv_rmse_mean
-    }
-    cv_metrics_dict[model_name]['MAE'] = {
-        'scores': cv_mae_scores,
-        'mean': cv_mae_mean
-    }
-    cv_metrics_dict[model_name]['R2'] = {
-        'scores': cv_r2_scores,
-        'mean': cv_r2_mean
-    }
-
-print(cv_metrics_dict)
-
-# PRINTING
-dataprint.print_metrics(model_metrics)
-dataprint.print_cross_validation_data(cv_metrics_dict)
-dataprint.print_compare_5fold_bargraph(cv_metrics_dict)
-dataprint.print_all_graphs_individual_cs_scores(cv_metrics_dict)
