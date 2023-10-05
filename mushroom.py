@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt 
 import seaborn as sns
 
+from sklearn.gaussian_process.kernels import RBF
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
@@ -13,8 +14,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-
-
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.tree import plot_tree
 
 def read_data(path):
     df = pd.read_csv(path)
@@ -52,12 +53,19 @@ def preprocess_data(df):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, shuffle=True)
     return x_train, x_test, y_train, y_test, mappings
 
-def train_and_evaluate_model(model, x_train, y_train, x_test, y_test):
+def plot_decision_tree(model, feature_names, class_names):
+    plt.figure(figsize=(20,10))
+    plot_tree(model, feature_names=feature_names, class_names=class_names, filled=True)
+    plt.show()
+
+def train_and_evaluate_model(model, x_train, y_train, x_test, y_test, feature_names, class_names):
     print(f"\n starting {model.__class__.__name__}....")
     model.fit(x_train, y_train)
     y_pred = model.predict(x_test)
     print_metrics(y_test, y_pred)
 
+    if isinstance(model, DecisionTreeClassifier):
+        plot_decision_tree(model, feature_names, class_names)
 
 def print_metrics(y_test, y_pred):
     
@@ -91,6 +99,8 @@ if __name__ == "__main__":
     mushroom_data = mushroom_data.drop(columns=["veil-type"]) # we drop it 
 
     x_train, x_test, y_train, y_test, mappings  = preprocess_data(mushroom_data)
+    feature_names = x_train.columns.tolist()
+    class_names = ['poisonous', 'edible'] 
     
     models = [
         LogisticRegression(),
@@ -102,5 +112,5 @@ if __name__ == "__main__":
     
     
     for model in models: 
-        train_and_evaluate_model(model, x_train, y_train, x_test, y_test) #loop to train and evaluate 
+        train_and_evaluate_model(model, x_train, y_train, x_test, y_test, feature_names, class_names) #loop to train and evaluate 
 
