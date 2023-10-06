@@ -33,3 +33,13 @@ pip install -r requirements.txt
 
 # 6. Deactivate the Virtual Environment
 deactivate
+
+
+
+## Contributors
+
+We'd like to extend our gratitude to the following individuals who have contributed to this project:
+
+- [Justin Neal](https://github.com/nealj1)
+- [Akshat Sharma](https://github.com/Cyoger)
+- [George](https://github.com/contributor3)
