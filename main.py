@@ -1,12 +1,12 @@
 # PACKAGES ---------------------------------------------------------------------
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
@@ -153,3 +153,104 @@ for model in models:
     print("\n")
 
 dataPrinting.print_compare_model_accuracies(model_names, accuracies)
+
+
+# Lists to store model names and their corresponding fold accuracies
+model_names = []
+fold_accuracies = []
+mean_accuracies = []
+
+# Specify the number of folds for cross-validation
+num_folds = 5  # You can adjust this number as needed
+
+# Create a cross-validation splitter
+cv = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=42)
+
+# Iterate through the list of models and perform cross-validation
+for model in models:
+    # Perform cross-validation and calculate accuracy scores for each fold
+    fold_scores = cross_val_score(model, X, y, cv=cv, scoring='accuracy')
+    
+    # Store model name and fold accuracies
+    model_names.append(model.__class__.__name__)
+    fold_accuracies.append(fold_scores)
+    
+    # Calculate and store mean accuracy across all folds
+    mean_accuracy = fold_scores.mean()
+    mean_accuracies.append(mean_accuracy)
+
+# Print the cross-validation results for each model and each fold
+for model_name, fold_accuracy in zip(model_names, fold_accuracies):
+    print(f"Model: {model_name}")
+    for fold_num, accuracy in enumerate(fold_accuracy, start=1):
+        print(f"Fold {fold_num} Accuracy: {accuracy:.4f}")
+    print(f"Mean Accuracy: {mean_accuracies[model_names.index(model_name)]:.4f}\n")
+
+
+
+# DECISIONTREECLASSIFIER VISUAL
+# Create a DecisionTreeClassifier
+dt_classifier = DecisionTreeClassifier(random_state=42)
+
+# Fit the model to your data
+dt_classifier.fit(X_train, y_train)
+
+# Plot the decision tree
+plt.figure(figsize=(10, 6))
+plot_tree(dt_classifier, filled=True, feature_names=list(X.columns), class_names=["EDIBLE", "POISONOUS"])
+plt.title("Decision Tree")
+plt.show()
+
+print(mean_accuracies)
+
+
+#LOGISTIC REGRESSION MODEL VISUAL
+# Create a Logistic Regression model
+logistic_regression = LogisticRegression(random_state=42)
+
+# Train the model
+logistic_regression.fit(X_train, y_train)
+
+# Get the coefficients (weights) of the model
+coefficients = logistic_regression.coef_[0]
+
+# Match coefficients with feature names
+feature_names = list(X.columns)
+
+# Create a DataFrame to store feature names and their corresponding coefficients
+coef_df = pd.DataFrame({'Feature': feature_names, 'Coefficient': coefficients})
+
+# Sort the DataFrame by coefficient values (absolute values for magnitude)
+coef_df['Abs_Coefficient'] = np.abs(coef_df['Coefficient'])
+sorted_coef_df = coef_df.sort_values(by='Abs_Coefficient', ascending=False)
+
+# Plot the top N most important features
+N = 10  # You can adjust this value
+top_features = sorted_coef_df.head(N)
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Coefficient', y='Feature', data=top_features)
+plt.title('Top {} Features - Logistic Regression Coefficients'.format(N))
+plt.xlabel('Coefficient Value')
+plt.ylabel('Feature')
+plt.show()
+
+
+
+# Create a Random Forest Classifier
+rf_classifier = RandomForestClassifier(random_state=42)
+
+# Train the model
+rf_classifier.fit(X_train, y_train)
+
+# Define the number of decision trees to visualize (e.g., the first 6)
+num_decision_trees_to_visualize = 6
+
+# Plot the decision trees
+plt.figure(figsize=(15, 10))
+for i, tree in enumerate(rf_classifier.estimators_[:num_decision_trees_to_visualize]):
+    plt.subplot(2, 3, i + 1)
+    plot_tree(tree, filled=True, feature_names=list(X.columns), class_names=["EDIBLE", "POISONOUS"])
+    plt.title(f"Decision Tree {i + 1}")
+plt.tight_layout()
+plt.show()
