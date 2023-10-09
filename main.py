@@ -71,17 +71,16 @@ df_summary = summary(mushroom_data)
 print(df_summary)
 
 # Dropped duplicate rows
+# Get the count of duplicated rows
+print(f"Number of duplicate rows before dropping: {mushroom_data.duplicated().sum()}")
 mushroom_data = mushroom_data.drop_duplicates()
+print(f"Number of duplicate rows after dropping: {mushroom_data.duplicated().sum()}")
 
 # Check for ? in the data
 question_mark_columns = columns_with_question_marks(mushroom_data)
 for column_name in question_mark_columns:
     count_question_marks = mushroom_data[column_name].str.count("\?").sum()
     print(f"Number of '?' in '{column_name}': {count_question_marks}")
-
-
-print(f"HERE : {mushroom_data.isnull().sum()}")
-
 
 # Find rows where 'class' is "EDIBLE" and 'stalk-root' is "?"
 edible_with_question_mark_stalk_root = mushroom_data[(mushroom_data['class'] == 'EDIBLE') & (mushroom_data['stalk-root'] == '?')]
