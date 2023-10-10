@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from sklearn.tree import plot_tree
-from sklearn.linear_model import LogisticRegression
 import pandas as pd
 
 def print_class_compare(mushroom_data, title):
@@ -133,15 +132,12 @@ def print_decision_tree_classifer(X, cv_model_names, models):
     plt.title(f"Decision Tree for {model_name_to_visualize}")
     plt.show()
 
-def print_logistic_regression_visual(X, X_train, y_train):
-    #LOGISTIC REGRESSION MODEL VISUAL
-    # Create a Logistic Regression model
-    logistic_regression = LogisticRegression(random_state=42, max_iter=1000)
+# LOGISTIC REGRESSION MODEL VISUAL
+def print_logistic_regression_visual(X, models):
+    # After the loop, you can access the logistic_regression model
+    logistic_regression = models[1]  # Assuming logistic regression is the second model in the list
 
-    # Train the model
-    logistic_regression.fit(X_train, y_train)
-
-    # Get the coefficients (weights) of the model
+    # Now you can access the coefficients of the logistic_regression model
     coefficients = logistic_regression.coef_[0]
 
     # Match coefficients with feature names
@@ -152,15 +148,56 @@ def print_logistic_regression_visual(X, X_train, y_train):
 
     # Sort the DataFrame by coefficient values (absolute values for magnitude)
     coef_df['Abs_Coefficient'] = np.abs(coef_df['Coefficient'])
-    sorted_coef_df = coef_df.sort_values(by='Abs_Coefficient', ascending=False)
 
-    # Plot the top N most important features
-    N = 10  # You can adjust this value
-    top_features = sorted_coef_df.head(N)
+    # Sort the DataFrame by absolute coefficient values (in descending order)
+    coef_df = coef_df.sort_values(by='Abs_Coefficient', ascending=False)
 
+    # Create a figure and axis for the bar chart
     plt.figure(figsize=(10, 6))
-    sns.barplot(x='Coefficient', y='Feature', data=top_features)
-    plt.title('Top {} Features - Logistic Regression Coefficients'.format(N))
+    ax = sns.barplot(x='Coefficient', y='Feature', data=coef_df)
+
+    # Define a color palette with a unique color for each bar
+    num_bars = len(coef_df)
+    color_palette = sns.color_palette("husl", num_bars)  # You can choose any color palette you like
+
+    # Assign a different color to each bar
+    for i, bar in enumerate(ax.patches):
+        bar.set_color(color_palette[i])
+
+    # Customize the chart labels and title
+    plt.title('Top Features - Logistic Regression Coefficients')
     plt.xlabel('Coefficient Value')
     plt.ylabel('Feature')
+
+    # Show the plot
+    plt.show()
+
+def print_random_forest_classifier(X, models):
+    randomforest = models[0]
+
+    # Get feature importances from the model
+    importances = randomforest.feature_importances_
+
+    # Match importances with feature names
+    feature_names = list(X.columns)
+
+    # Create a DataFrame to store feature names and their corresponding importances
+    importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': importances})
+
+    # Sort the features by importance in descending order
+    importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+    # Create a custom color palette for the bars
+    num_features = len(importance_df)
+
+    # Create a figure and axis for the bar chart, specifying the custom color palette
+    plt.figure(figsize=(10, 6))
+    ax = sns.barplot(x='Importance', y='Feature', data=importance_df)
+
+    # Customize the chart labels and title
+    plt.title('Feature Importances - RandomForestClassifier')
+    plt.xlabel('Importance')
+    plt.ylabel('Feature')
+
+    # Show the plot
     plt.show()

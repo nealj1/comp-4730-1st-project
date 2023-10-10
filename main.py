@@ -1,18 +1,17 @@
 # PACKAGES ---------------------------------------------------------------------
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
+from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 import printing as dataPrinting
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 #SETTINGS ---------------------------------------------------------------
 pd.set_option('display.max_colwidth', None)
 # Set the display option to show all rows
@@ -88,25 +87,20 @@ for column_name in question_mark_columns:
 edible_with_question_mark_stalk_root = mushroom_data[(mushroom_data['class'] == 'EDIBLE') & (mushroom_data['stalk-root'] == '?')]
 edible = mushroom_data[(mushroom_data['class'] == 'EDIBLE')]
 poisonous = mushroom_data[(mushroom_data['class'] == 'POISONOUS')]
-#dataPrinting.print_class_compare(mushroom_data, "Distribution of Mushroom Classes")
 
+dataPrinting.print_class_compare(mushroom_data, "Distribution of Mushroom Classes")
 # Balancing
 mushroom_data = balance_dataset(mushroom_data, edible.shape[0] - poisonous.shape[0])
 print(f'mushroom count: {edible.shape[0] - poisonous.shape[0]}')
-#dataPrinting.print_class_compare(mushroom_data,"Distribution of Mushroom Classes Balanced" )
 
 #Drop Columns
 mushroom_data = mushroom_data.drop(columns=['stalk-root']) # column has lots of ?
 mushroom_data = mushroom_data.drop(columns=['veil-type']) # is a constant column so does not add anything
 
-
 #Encodes categorical features
 label_encoder = LabelEncoder()
 for column in mushroom_data.columns:
     mushroom_data[column] = label_encoder.fit_transform(mushroom_data[column])
-
-#dataPrinting.print_heatmap(mushroom_data)
-
 
 # Split the data into train and test sets
 X = mushroom_data.drop('class', axis=1)
@@ -121,9 +115,6 @@ models = [
     DecisionTreeClassifier(random_state=42),
     GaussianNB()
 ]
-
-# Print Logistic Regression Visual
-#dataPrinting.print_logistic_regression_visual(X, X_train, y_train)
 
 # Lists to store model names and their corresponding accuracies
 model_names = []
@@ -160,9 +151,6 @@ for model in models:
     print("Confusion Matrix:\n", confusion)
     print("Classification Report:\n", report)
     print("\n")
-
-#dataPrinting.print_compare_model_accuracies(model_names, accuracies)
-
 
 # Lists to store model names and their corresponding fold accuracies
 cv_model_names = []
@@ -226,99 +214,17 @@ for model_name, fold_accuracy, fold_confusion, fold_report in zip(cv_model_names
     print(f"Mean Accuracy: {mean_accuracies[cv_model_names.index(model_name)]:.4f}\n")
 
 
-'''
-#LOGISTIC REGRESSION MODEL VISUAL
-# Create a Logistic Regression model
-logistic_regression = LogisticRegression(random_state=42, max_iter=1000)
-
-# Train the model
-logistic_regression.fit(X_train, y_train)
-
-# Get the coefficients (weights) of the model
-coefficients = logistic_regression.coef_[0]
-
-# Match coefficients with feature names
-feature_names = list(X.columns)
-
-# Create a DataFrame to store feature names and their corresponding coefficients
-coef_df = pd.DataFrame({'Feature': feature_names, 'Coefficient': coefficients})
-
-# Sort the DataFrame by coefficient values (absolute values for magnitude)
-coef_df['Abs_Coefficient'] = np.abs(coef_df['Coefficient'])
-sorted_coef_df = coef_df.sort_values(by='Abs_Coefficient', ascending=False)
-
-# Plot the top N most important features
-N = 10  # You can adjust this value
-top_features = sorted_coef_df.head(N)
-
-plt.figure(figsize=(10, 6))
-sns.barplot(x='Coefficient', y='Feature', data=top_features)
-plt.title('Top {} Features - Logistic Regression Coefficients'.format(N))
-plt.xlabel('Coefficient Value')
-plt.ylabel('Feature')
-plt.show()
-
-
-
-# Create a Random Forest Classifier
-rf_classifier = RandomForestClassifier(random_state=42)
-
-# Train the model
-rf_classifier.fit(X_train, y_train)
-
-# Define the number of decision trees to visualize (e.g., the first 6)
-num_decision_trees_to_visualize = 6
-
-# Plot the decision trees
-plt.figure(figsize=(15, 10))
-for i, tree in enumerate(rf_classifier.estimators_[:num_decision_trees_to_visualize]):
-    plt.subplot(2, 3, i + 1)
-    plot_tree(tree, filled=True, feature_names=list(X.columns), class_names=["EDIBLE", "POISONOUS"])
-    plt.title(f"Decision Tree {i + 1}")
-plt.tight_layout()
-plt.show()
-'''
-
+# DATA ANALYSIS
+dataPrinting.print_class_compare(mushroom_data,"Distribution of Mushroom Classes Balanced" )
+dataPrinting.print_heatmap(mushroom_data)
+dataPrinting.print_compare_model_accuracies(model_names, accuracies)
+dataPrinting.print_logistic_regression_visual(X, models)
 dataPrinting.print_decision_tree_classifer(X, cv_model_names, models)
 print(mean_accuracies)
-
+dataPrinting.print_random_forest_classifier(X, models)
 
 #CROSS VALIDATION DATA ANALYSIS
 #dataPrinting.print_crossfold_data(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
-#dataPrinting.print_crossfold_compare_all_same_graph(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
-#dataPrinting.testing(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
+dataPrinting.print_crossfold_compare_all_same_graph(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
+dataPrinting.print_crossfold_compare_separate(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
 
-#dataPrinting.print_crossfold_compare_separate(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
-
-
-#LOGISTIC REGRESSION MODEL VISUAL
-
-# After the loop, you can access the logistic_regression model
-logistic_regression = models[1]  # Assuming logistic regression is the second model in the list
-
-# Now you can access the coefficients of the logistic_regression model
-coefficients = logistic_regression.coef_[0]
-
-# Match coefficients with feature names
-feature_names = list(X.columns)
-
-# Create a DataFrame to store feature names and their corresponding coefficients
-coef_df = pd.DataFrame({'Feature': feature_names, 'Coefficient': coefficients})
-
-# Sort the DataFrame by coefficient values (absolute values for magnitude)
-coef_df['Abs_Coefficient'] = np.abs(coef_df['Coefficient'])
-
-# Print the DataFrame to see the coefficients for each feature
-print(coef_df)
-sorted_coef_df = coef_df.sort_values(by='Abs_Coefficient', ascending=False)
-
-# Plot the top N most important features
-N = 10  # You can adjust this value
-top_features = sorted_coef_df.head(N)
-
-plt.figure(figsize=(10, 6))
-sns.barplot(x='Coefficient', y='Feature', data=top_features)
-plt.title('Top {} Features - Logistic Regression Coefficients'.format(N))
-plt.xlabel('Coefficient Value')
-plt.ylabel('Feature')
-plt.show()
