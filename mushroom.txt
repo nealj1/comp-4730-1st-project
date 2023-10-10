@@ -1,0 +1,94 @@
+Column 'stalk-root' has the most missing values: 2480
+         class cap-shape cap-surface  ... spore-print-color population habitat
+count     8416      8416        8416  ...              8416       8416    8416
+unique       2         6           4  ...                 9          6       7
+top     EDIBLE    CONVEX       SCALY  ...             WHITE    SEVERAL   WOODS
+freq      4488      3796        3268  ...              2424       4064    3160
+
+[4 rows x 23 columns]
+
+ starting LogisticRegression....
+Accuracy: 93.53%
+Precision: 95.41%
+Recall: 90.40%
+F1 Score: 92.83%
+LogisticRegression CV Accuracy: 0.94 +/- 0.00
+
+ starting DecisionTreeClassifier....
+Accuracy: 96.85%
+Precision: 96.08%
+Recall: 97.18%
+F1 Score: 96.63%
+DecisionTreeClassifier CV Accuracy: 0.97 +/- 0.01
+
+ starting RandomForestClassifier....
+Accuracy: 98.93%
+Precision: 99.87%
+Recall: 97.82%
+F1 Score: 98.84%
+RandomForestClassifier CV Accuracy: 0.99 +/- 0.00
+
+ starting GaussianNB....
+Accuracy: 88.54%
+Precision: 88.38%
+Recall: 86.68%
+F1 Score: 87.52%
+GaussianNB CV Accuracy: 0.88 +/- 0.01
+
+ starting SVC....
+Accuracy: 94.77%
+Precision: 95.53%
+Recall: 93.09%
+F1 Score: 94.29%
+SVC CV Accuracy: 0.94 +/- 0.00
+
+ starting AdaBoostClassifier....
+Accuracy: 98.28%
+Precision: 99.09%
+Recall: 97.18%
+F1 Score: 98.13%
+AdaBoostClassifier CV Accuracy: 0.99 +/- 0.01
+
+Performing hyperparameter search now...
+
+Starting LogisticRegression....
+Best parameters for LogisticRegression: {'C': 0.01, 'max_iter': 100, 'penalty': 'l1', 'solver': 'saga'}
+Accuracy: 93.59%
+Precision: 95.41%
+Recall: 90.52%
+F1 Score: 92.90%
+
+Starting DecisionTreeClassifier....
+Best parameters for DecisionTreeClassifier: {'criterion': 'entropy', 'max_depth': 7}
+Accuracy: 100.00%
+Precision: 100.00%
+Recall: 100.00%
+F1 Score: 100.00%
+
+Starting RandomForestClassifier....
+Best parameters for RandomForestClassifier: {'max_depth': 5, 'n_estimators': 10}
+Accuracy: 100.00%
+Precision: 100.00%
+Recall: 100.00%
+F1 Score: 100.00%
+
+Starting GaussianNB....
+Best parameters for GaussianNB: {'var_smoothing': 1e-09}
+Accuracy: 88.54%
+Precision: 88.38%
+Recall: 86.68%
+F1 Score: 87.52%
+
+Starting SVC....
+Best parameters for SVC: {'C': 0.25, 'degree': 3, 'kernel': 'poly'}
+Accuracy: 100.00%
+Precision: 100.00%
+Recall: 100.00%
+F1 Score: 100.00%
+
+Starting AdaBoostClassifier....
+Best parameters for AdaBoostClassifier: {'learning_rate': 1, 'n_estimators': 50}
+Accuracy: 100.00%
+Precision: 100.00%
+Recall: 100.00%
+F1 Score: 100.00%

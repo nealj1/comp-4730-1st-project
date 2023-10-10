@@ -1,0 +1,121 @@
+                          dtypes  ...                                                                           unique_values
+class                     object  ...                                                                     [EDIBLE, POISONOUS]
+cap-shape                 object  ...                                          [CONVEX, FLAT, BELL, SUNKEN, KNOBBED, CONICAL]
+cap-surface               object  ...                                                       [SMOOTH, FIBROUS, SCALY, GROOVES]
+cap-color                 object  ...                  [WHITE, YELLOW, BROWN, GRAY, RED, PINK, PURPLE, GREEN, BUFF, CINNAMON]
+bruises                   object  ...                                                                           [BRUISES, NO]
+odor                      object  ...                     [ALMOND, ANISE, NONE, PUNGENT, CREOSOTE, FOUL, FISHY, SPICY, MUSTY]
+gill-attachment           object  ...                                                                        [FREE, ATTACHED]
+gill-spacing              object  ...                                                                        [CROWDED, CLOSE]
+gill-size                 object  ...                                                                         [NARROW, BROAD]
+gill-color                object  ...  [WHITE, PINK, BROWN, GRAY, BLACK, CHOCOLATE, PURPLE, GREEN, RED, BUFF, YELLOW, ORANGE]
+stalk-shape               object  ...                                                                   [TAPERING, ENLARGING]
+stalk-root                object  ...                                                       [BULBOUS, CLUB, ROOTED, EQUAL, ?]
+stalk-surface-above-ring  object  ...                                                         [SMOOTH, FIBROUS, SILKY, SCALY]
+stalk-surface-below-ring  object  ...                                                         [SMOOTH, SCALY, FIBROUS, SILKY]
+stalk-color-above-ring    object  ...                         [WHITE, PINK, GRAY, BUFF, BROWN, RED, CINNAMON, YELLOW, ORANGE]
+stalk-color-below-ring    object  ...                         [WHITE, PINK, GRAY, BUFF, BROWN, RED, YELLOW, CINNAMON, ORANGE]
+veil-type                 object  ...                                                                               [PARTIAL]
+veil-color                object  ...                                                          [WHITE, YELLOW, ORANGE, BROWN]
+ring-number               object  ...                                                                        [ONE, TWO, NONE]
+ring-type                 object  ...                                             [PENDANT, EVANESCENT, LARGE, FLARING, NONE]
+spore-print-color         object  ...                   [PURPLE, BROWN, BLACK, CHOCOLATE, GREEN, WHITE, YELLOW, ORANGE, BUFF]
+population                object  ...                           [SEVERAL, SCATTERED, NUMEROUS, SOLITARY, ABUNDANT, CLUSTERED]
+habitat                   object  ...                                  [WOODS, MEADOWS, GRASSES, PATHS, URBAN, LEAVES, WASTE]
+
+[23 rows x 7 columns]
+Number of duplicate rows before dropping: 292
+Number of duplicate rows after dropping: 0
+Number of '?' in 'stalk-root': 2480
+Number of rows removed: 292
+mushroom count: 292
+Model: RandomForestClassifier
+Accuracy: 1.0
+Confusion Matrix:
+ [[789   0]
+ [  0 778]]
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       789
+           1       1.00      1.00      1.00       778
+
+    accuracy                           1.00      1567
+   macro avg       1.00      1.00      1.00      1567
+weighted avg       1.00      1.00      1.00      1567
+
+
+
+Model: LogisticRegression
+Accuracy: 0.9514996809189534
+Confusion Matrix:
+ [[750  39]
+ [ 37 741]]
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       0.95      0.95      0.95       789
+           1       0.95      0.95      0.95       778
+
+    accuracy                           0.95      1567
+   macro avg       0.95      0.95      0.95      1567
+weighted avg       0.95      0.95      0.95      1567
+
+
+
+Model: SVC
+Accuracy: 1.0
+Confusion Matrix:
+ [[789   0]
+ [  0 778]]
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       789
+           1       1.00      1.00      1.00       778
+
+    accuracy                           1.00      1567
+   macro avg       1.00      1.00      1.00      1567
+weighted avg       1.00      1.00      1.00      1567
+
+
+
+Model: DecisionTreeClassifier
+Accuracy: 1.0
+Confusion Matrix:
+ [[789   0]
+ [  0 778]]
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       789
+           1       1.00      1.00      1.00       778
+
+    accuracy                           1.00      1567
+   macro avg       1.00      1.00      1.00      1567
+weighted avg       1.00      1.00      1.00      1567
+
+
+
+Model: GaussianNB
+Accuracy: 0.9183152520740268
+Confusion Matrix:
+ [[736  53]
+ [ 75 703]]
+Classification Report:
+               precision    recall  f1-score   support
+
+           0       0.91      0.93      0.92       789
+           1       0.93      0.90      0.92       778
+
+    accuracy                           0.92      1567
+   macro avg       0.92      0.92      0.92      1567
+weighted avg       0.92      0.92      0.92      1567
+
+
+
+model name: RandomForestClassifier(random_state=42)
+model name: LogisticRegression(C=10, max_iter=1000, random_state=42, solver='liblinear')
+model name: SVC(random_state=42)
+model name: DecisionTreeClassifier(max_features='sqrt', random_state=42)
+model name: GaussianNB()
