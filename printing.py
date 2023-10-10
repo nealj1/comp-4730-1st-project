@@ -201,3 +201,32 @@ def print_random_forest_classifier(X, models):
 
     # Show the plot
     plt.show()
+
+def print_results_for_each_model(cv_model_names, fold_accuracies, fold_confusions, fold_reports, mean_accuracies):
+    # Print the results for each fold and model at the end
+    for model_name, fold_accuracy, fold_confusion, fold_report in zip(cv_model_names, fold_accuracies, fold_confusions, fold_reports):
+        print(f"Model: {model_name}")
+        for fold_num, (accuracy, confusion, report) in enumerate(zip(fold_accuracy, fold_confusion, fold_report), start=1):
+            print(f"Fold {fold_num} Accuracy: {accuracy:.4f}")
+            print("Confusion Matrix:\n", confusion)
+            print("Classification Report:\n", report)
+            print("\n")
+        print(f"Mean Accuracy: {mean_accuracies[cv_model_names.index(model_name)]:.4f}\n")
+
+def print_grid_search_result(model_name, best_parameters, best_accuracy):
+    # Print the results
+    print(f"Best parameters for {model_name}: {best_parameters}")
+    print(f"Best accuracy for {model_name}: {best_accuracy:.4f}")
+    print("\n")
+
+def print_grid_search(best_model_names, best_parameters_list):
+    for model_name, best_parameters in zip(best_model_names, best_parameters_list):
+        print(f"Model: {model_name} Best parameters: {best_parameters}")
+
+def print_best_grid_training_results(model_name, accuracy, confusion, report):
+    # Print the results for each model
+    print(f"Model: {model_name}")
+    print("Accuracy:", accuracy)
+    print("Confusion Matrix:\n", confusion)
+    print("Classification Report:\n", report)
+    print("\n")

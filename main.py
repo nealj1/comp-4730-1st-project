@@ -9,6 +9,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import GridSearchCV
 
 import printing as dataPrinting
 
@@ -16,6 +17,7 @@ import printing as dataPrinting
 pd.set_option('display.max_colwidth', None)
 # Set the display option to show all rows
 #pd.set_option('display.max_rows', None)
+random_state = 42
 
 # Functions -------------------------------------------------------------
 def summary(df):
@@ -105,14 +107,14 @@ for column in mushroom_data.columns:
 # Split the data into train and test sets
 X = mushroom_data.drop('class', axis=1)
 y = mushroom_data['class']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=random_state)
 
 # Define a list of models
 models = [
-    RandomForestClassifier(random_state=42),
-    LogisticRegression(random_state=42, max_iter=1000),
-    SVC(random_state=42),
-    DecisionTreeClassifier(random_state=42),
+    RandomForestClassifier(random_state=random_state),
+    LogisticRegression(random_state=random_state, max_iter=1000),
+    SVC(random_state=random_state),
+    DecisionTreeClassifier(random_state=random_state),
     GaussianNB()
 ]
 
@@ -163,7 +165,7 @@ fold_reports = []
 num_folds = 5  # You can adjust this number as needed
 
 # Create a cross-validation splitter
-cv = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=42)
+cv = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=random_state)
 
 # Iterate through the list of models and perform cross-validation
 for model in models:
@@ -203,17 +205,9 @@ for model in models:
     mean_accuracy = np.mean(fold_accuracies_model)
     mean_accuracies.append(mean_accuracy)
 
-# Print the results for each fold and model at the end
-for model_name, fold_accuracy, fold_confusion, fold_report in zip(cv_model_names, fold_accuracies, fold_confusions, fold_reports):
-    print(f"Model: {model_name}")
-    for fold_num, (accuracy, confusion, report) in enumerate(zip(fold_accuracy, fold_confusion, fold_report), start=1):
-        print(f"Fold {fold_num} Accuracy: {accuracy:.4f}")
-        print("Confusion Matrix:\n", confusion)
-        print("Classification Report:\n", report)
-        print("\n")
-    print(f"Mean Accuracy: {mean_accuracies[cv_model_names.index(model_name)]:.4f}\n")
 
 
+'''
 # DATA ANALYSIS
 dataPrinting.print_class_compare(mushroom_data,"Distribution of Mushroom Classes Balanced" )
 dataPrinting.print_heatmap(mushroom_data)
@@ -223,8 +217,99 @@ dataPrinting.print_decision_tree_classifer(X, cv_model_names, models)
 print(mean_accuracies)
 dataPrinting.print_random_forest_classifier(X, models)
 
-#CROSS VALIDATION DATA ANALYSIS
+# CROSS VALIDATION DATA ANALYSIS
 #dataPrinting.print_crossfold_data(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
 dataPrinting.print_crossfold_compare_all_same_graph(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
 dataPrinting.print_crossfold_compare_separate(cv_model_names, fold_accuracies, mean_accuracies, num_folds)
 
+# HYPERTUNING DATA ANALYSIS
+dataPrinting.print_results_for_each_model(cv_model_names, fold_accuracies, fold_confusions, fold_reports, mean_accuracies)
+'''
+
+
+
+
+
+
+# Define a dictionary of hyperparameters for each model
+param_grid = {
+    # 'RandomForestClassifier': {
+    #     'n_estimators': [100, 200, 300],
+    #     'max_depth': [None, 10, 20],
+    #     'min_samples_split': [2, 5, 10],
+    #     'min_samples_leaf': [1, 2, 4],
+    #     'max_features': ['auto', 'sqrt', 'log2'],
+    # },
+    'LogisticRegression': {
+        'C': [0.1, 1, 10],
+        'solver': ['lbfgs', 'liblinear'],
+        'penalty': ['l2'],
+        'class_weight': [None, 'balanced'],
+    },
+    # 'SVC': {
+    #     'C': [0.1, 1, 10],
+    #     'kernel': ['linear', 'rbf', 'poly'],
+    #     'gamma': ['scale', 'auto', 0.1, 1],
+    #     'degree': [2, 3, 4],
+    #     'coef0': [0.0, 0.1, 0.5],
+    # },
+    'DecisionTreeClassifier': {
+        'max_depth': [None, 10, 20],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'max_features': ['sqrt', 'log2'],
+    },
+    'GaussianNB': {},
+}
+
+
+# Lists to store model names, best parameters, and best accuracies
+best_model_names = []
+best_parameters_list = []
+best_accuracies_list = []
+
+# Iterate through the list of models and perform grid search
+for model in models:
+    model_name = model.__class__.__name__
+    param_grid_model = param_grid.get(model_name, {})  # Get the parameter grid for the current model
+
+    # Create a GridSearchCV object
+    grid_search = GridSearchCV(model, param_grid_model, cv=num_folds, scoring='accuracy')
+
+    # Perform grid search on the training data
+    grid_search.fit(X_train, y_train)
+
+    # Get the best parameters and best accuracy
+    best_parameters = grid_search.best_params_
+    best_accuracy = grid_search.best_score_
+
+    # Store the results
+    best_model_names.append(model_name)
+    best_parameters_list.append(best_parameters)
+    best_accuracies_list.append(best_accuracy)
+
+# Now you can use the best hyperparameters for each model to train and evaluate them.
+# You can replace the existing model training and evaluation code with this new information.
+
+# Iterate through the list of best models and train/evaluate each one
+for model_name, best_parameters in zip(best_model_names, best_parameters_list):
+    model = models[best_model_names.index(model_name)]
+    model.set_params(**best_parameters)  # Set the best parameters for the model
+    print(f'model name: {model}')
+
+    # Train the model on the training data
+    model.fit(X_train, y_train)
+
+    # Make predictions on the test data
+    y_pred = model.predict(X_test)
+
+    # Evaluate the model's performance
+    accuracy = accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+
+
+
+# dataPrinting.print_grid_search(best_model_names, best_parameters_list)
+# dataPrinting.print_grid_search_result(model_name, best_parameters, best_accuracy)
+# dataPrinting.print_best_grid_training_results(model_name, accuracy, confusion, report)
