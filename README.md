@@ -31,10 +31,6 @@ source <env-name>/bin/activate
 # 5. Install Project Dependencies
 pip install -r requirements.txt
 
-# 6. Deactivate the Virtual Environment
-deactivate
-
-
 
 ## Contributors
 
