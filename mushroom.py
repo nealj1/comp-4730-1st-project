@@ -127,7 +127,7 @@ def plot_learning_curve(model, X, y):
     plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, color="g", alpha=0.1)
 
     # Create plot
-    plt.title("Learning Curve")
+    plt.title(f"Learning Curve {model}")
     plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
     plt.tight_layout()
     plt.show()
@@ -140,6 +140,7 @@ if __name__ == "__main__":
     #handle missing values
     # ADD returned and did a loop dbl check main and add in here
     check_missing_values(mushroom_data)
+    mushroom_data = mushroom_data.drop_duplicates()
 
     mushroom_data = mushroom_data.drop(columns=["stalk-root"]) # we end up dropping this because it has too many missing values
 

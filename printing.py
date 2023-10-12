@@ -13,20 +13,18 @@ def print_class_compare(mushroom_data, title):
     # Count the frequency of each class
     class_counts = mushroom_data['class'].value_counts()
 
+    # Define custom colors for the bars
+    colors = ['green', 'red']
+
     # Plot the bar graph
-    plt.figure(figsize=(6, 4))  # Adjust the figure size as needed
-    ax = class_counts.plot(kind='bar', color=['green', 'red'])  # Customize colors if desired
-
-    # Define custom labels for the x-axis ticks
-    custom_labels = ['EDIBLE', 'POISONOUS']  # Replace with your desired labels
-
-    # Set the custom labels for the x-axis ticks
-    plt.xticks(range(len(custom_labels)), custom_labels)
+    plt.figure(figsize=(8, 6))
+    plt.bar(['EDIBLE', 'POISONOUS'], class_counts, color=colors)
 
     plt.title(title)
     plt.xlabel('Class')
     plt.ylabel('Count')
     plt.show()
+
 
 def print_compare_model_accuracies(model_names, accuracies):
     plt.figure(figsize=(10, 6))

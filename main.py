@@ -207,7 +207,6 @@ for model in models:
 
 
 
-'''
 # DATA ANALYSIS
 dataPrinting.print_class_compare(mushroom_data,"Distribution of Mushroom Classes Balanced" )
 dataPrinting.print_heatmap(mushroom_data)
@@ -224,7 +223,7 @@ dataPrinting.print_crossfold_compare_separate(cv_model_names, fold_accuracies, m
 
 # HYPERTUNING DATA ANALYSIS
 dataPrinting.print_results_for_each_model(cv_model_names, fold_accuracies, fold_confusions, fold_reports, mean_accuracies)
-'''
+
 
 
 
