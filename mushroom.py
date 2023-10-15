@@ -107,7 +107,7 @@ def print_metrics(y_test, y_pred):
     f1 = f1_score(y_test, y_pred)
     print(f'F1 Score: {f1 * 100:.2f}%')
 
-def plot_learning_curve(model, X, y):
+def plot_learning_curve(model, modelName, X, y):
     train_sizes, train_scores, test_scores = learning_curve(model, X, y, cv=5, scoring='accuracy', n_jobs=-1, train_sizes=np.linspace(0.01, 1.0, 50))
     
     # Calculate mean and standard deviation for training set scores
@@ -127,7 +127,7 @@ def plot_learning_curve(model, X, y):
     plt.fill_between(train_sizes, test_mean - test_std, test_mean + test_std, color="g", alpha=0.1)
 
     # Create plot
-    plt.title(f"Learning Curve {model}")
+    plt.title(f"Learning Curve {modelName}")
     plt.xlabel("Training Set Size"), plt.ylabel("Accuracy Score"), plt.legend(loc="best")
     plt.tight_layout()
     plt.show()
@@ -140,6 +140,8 @@ if __name__ == "__main__":
     #handle missing values
     # ADD returned and did a loop dbl check main and add in here
     check_missing_values(mushroom_data)
+    
+    # DROP duplicate settings
     mushroom_data = mushroom_data.drop_duplicates()
 
     mushroom_data = mushroom_data.drop(columns=["stalk-root"]) # we end up dropping this because it has too many missing values
@@ -166,7 +168,7 @@ if __name__ == "__main__":
         train_and_evaluate_model(model, x_train, y_train, x_test, y_test, feature_names, class_names) #loop to train and evaluate 
         cv_scores = cross_val_score(model, x_train, y_train, cv=5, scoring='accuracy') # 5-fold CV
         print(f"{model.__class__.__name__} CV Accuracy: {np.mean(cv_scores):.2f} +/- {np.std(cv_scores):.2f}")
-        plot_learning_curve(model, x_train, y_train)
+        plot_learning_curve(model, model.__class__.__name__, x_train, y_train)
     
         
     print("\nPerforming hyperparameter search now...")
