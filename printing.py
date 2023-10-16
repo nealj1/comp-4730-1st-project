@@ -1,8 +1,3 @@
-# add graph for 
-# heatmap
-# edible vs poisonous
-# we should do the cv like in the regression where we graph each of the fold values
-# print the decision tree graph to see what the nodes it split on are
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -200,6 +195,7 @@ def print_random_forest_classifier(X, models):
     # Show the plot
     plt.show()
 
+# Print the evaluation results for each cross-validated model, including accuracy, confusion matrix, classification report, and mean accuracy.
 def print_results_for_each_model(cv_model_names, fold_accuracies, fold_confusions, fold_reports, mean_accuracies):
     # Print the results for each fold and model at the end
     for model_name, fold_accuracy, fold_confusion, fold_report in zip(cv_model_names, fold_accuracies, fold_confusions, fold_reports):
@@ -211,16 +207,19 @@ def print_results_for_each_model(cv_model_names, fold_accuracies, fold_confusion
             print("\n")
         print(f"Mean Accuracy: {mean_accuracies[cv_model_names.index(model_name)]:.4f}\n")
 
+# Print the results of a grid search for a specific model, including the best hyperparameters and best accuracy.
 def print_grid_search_result(model_name, best_parameters, best_accuracy):
     # Print the results
     print(f"Best parameters for {model_name}: {best_parameters}")
     print(f"Best accuracy for {model_name}: {best_accuracy:.4f}")
     print("\n")
 
+# Print the results of a grid search for multiple models, including the best hyperparameters found for each model.
 def print_grid_search(best_model_names, best_parameters_list):
     for model_name, best_parameters in zip(best_model_names, best_parameters_list):
         print(f"Model: {model_name} Best parameters: {best_parameters}")
 
+#  Print the training results for a specific model, including accuracy, confusion matrix, and classification report.
 def print_best_grid_training_results(model_name, accuracy, confusion, report):
     # Print the results for each model
     print(f"Model: {model_name}")

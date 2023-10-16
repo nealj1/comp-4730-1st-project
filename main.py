@@ -14,12 +14,18 @@ from sklearn.model_selection import GridSearchCV
 import printing as dataPrinting
 
 #SETTINGS ---------------------------------------------------------------
+# Set some display options for pandas dataframes
 pd.set_option('display.max_colwidth', None)
 # Set the display option to show all rows
-#pd.set_option('display.max_rows', None)
+'''pd.set_option('display.max_rows', None)'''
+
+# Set a random seed for reproducibility
 random_state = 42
 
 # Functions -------------------------------------------------------------
+# Define some custom functions for data analysis and preprocessing
+
+# Function to create a summary DataFrame for the input data
 def summary(df):
     summary_df = pd.DataFrame(df.dtypes, columns=['dtypes'])
     summary_df['duplicated'] = df.duplicated().sum()
@@ -35,23 +41,21 @@ def summary(df):
 
     return summary_df
 
-
+# Function to identify columns with question marks in the data
 def columns_with_question_marks(df):
-    
     columns_with_question_mark = []
     # Loop through all columns in the DataFrame
     for column in df.columns:
         # Create a boolean mask for rows with "?"
         mask = df[column] == "?"
-
         # Use the mask to filter the rows
         rows_with_question_mark = df[mask]
-
         # Check if there are any rows with "?"
         if not rows_with_question_mark.empty:
             columns_with_question_mark.append(column)
     return columns_with_question_mark
 
+# Function to balance the dataset by removing rows with a certain condition
 def balance_dataset(mushroom_data, rows_to_remove):
     # Find rows where 'class' is "EDIBLE" and 'stalk-root' is "?"
     edible_with_question_mark_stalk_root = mushroom_data[(mushroom_data['class'] == 'EDIBLE') & (mushroom_data['stalk-root'] == '?')]
@@ -89,8 +93,8 @@ for column_name in question_mark_columns:
 edible_with_question_mark_stalk_root = mushroom_data[(mushroom_data['class'] == 'EDIBLE') & (mushroom_data['stalk-root'] == '?')]
 edible = mushroom_data[(mushroom_data['class'] == 'EDIBLE')]
 poisonous = mushroom_data[(mushroom_data['class'] == 'POISONOUS')]
-
 dataPrinting.print_class_compare(mushroom_data, "Distribution of Mushroom Classes")
+
 # Balancing
 mushroom_data = balance_dataset(mushroom_data, edible.shape[0] - poisonous.shape[0])
 print(f'mushroom count: {edible.shape[0] - poisonous.shape[0]}')
@@ -223,10 +227,6 @@ dataPrinting.print_crossfold_compare_separate(cv_model_names, fold_accuracies, m
 
 # HYPERTUNING DATA ANALYSIS
 dataPrinting.print_results_for_each_model(cv_model_names, fold_accuracies, fold_confusions, fold_reports, mean_accuracies)
-
-
-
-
 
 
 
