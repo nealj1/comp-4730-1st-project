@@ -45,4 +45,4 @@ We'd like to extend our gratitude to the following individuals who have contribu
 
 - [Justin Neal](https://github.com/nealj1)
 - [Akshat Sharma](https://github.com/Cyoger)
-- [George](https://github.com/contributor3)
+- [George Kaceli](https://github.com/gfkaceli)
