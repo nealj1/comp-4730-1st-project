@@ -16,6 +16,9 @@ We'd like to extend our gratitude to the following individuals who have contribu
 - `printing.py`: Similar to main.py, this script serves the purpose of conducting data testing and in-depth dataset examination.
 - `mushroom.py`: This file encompasses the refined and optimized codebase, offering enhanced code quality and functionality.
 - `neural_net.py`: An upcoming component of the project, this script will focus on the development and implementation of a neural network for future enhancements.
+- `mushroom.docx`: This is the project report providing detailed documentation and analysis in docx format.
+- `mushroom.pdf`: This is the project report providing detailed documentation and analysis in pdf format.
+
 
 # Virtual Environment Setup
 
