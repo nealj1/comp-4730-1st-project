@@ -2,6 +2,14 @@
 Choose a dataset from the UC Irvine Machine Learning Repository (https://archive.ics.uci.edu) with at least 5000 instances and 20 attributes for classification or regression.
 Compare how the different approaches seen in class perform on this dataset to predict accurately the classes or the values of the unlabeled data. You should determine what are the best hyper-parameters for each approach you are using.
 
+## Contributors
+
+We'd like to extend our gratitude to the following individuals who have contributed to this project:
+
+- [Justin Neal](https://github.com/nealj1)
+- [Akshat Sharma](https://github.com/Cyoger)
+- [George Kaceli](https://github.com/gfkaceli)
+
 ## Project Structure
 
 - `main.py`: This script is dedicated to data testing and comprehensive dataset analysis.
@@ -37,12 +45,3 @@ source <env-name>/bin/activate
 
 # 5. Install Project Dependencies
 pip install -r requirements.txt
-
-
-## Contributors
-
-We'd like to extend our gratitude to the following individuals who have contributed to this project:
-
-- [Justin Neal](https://github.com/nealj1)
-- [Akshat Sharma](https://github.com/Cyoger)
-- [George Kaceli](https://github.com/gfkaceli)
